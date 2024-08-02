@@ -1,6 +1,6 @@
 # eutd-mmo-bc
 
-Core delivery platform Node.js Frontend Template.
+Core delivery platform Node.js Frontend Template..
 
 - [Requirements](#requirements)
   - [Node.js](#nodejs)
