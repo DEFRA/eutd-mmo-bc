@@ -8,6 +8,17 @@ const oneHour = 1000 * 60 * 60
 const fourHours = oneHour * 4
 const oneWeekMillis = oneHour * 24 * 7
 
+const getUsers = () => {
+  let userCredentials = ''
+  if (process.env.NODE_ENV === 'production') {
+    // @ts-expect-error will be defined
+    userCredentials = process.env.ADMIN_USER_CREDENTIALS
+  } else {
+    userCredentials = 'eyJhZG1pbiI6ImFkbWluIn0='
+  }
+  return JSON.parse(Buffer.from(userCredentials, 'base64').toString('utf8'))
+}
+
 export const config = convict({
   env: {
     doc: 'The application environment.',
@@ -147,7 +158,8 @@ export const config = convict({
       default: process.env.NODE_ENV !== 'production',
       env: 'USE_SINGLE_INSTANCE_CACHE'
     }
-  })
+  }),
+  users: /** @type {SchemaObj<string>} */ getUsers()
 })
 
 config.validate({ allowed: 'strict' })

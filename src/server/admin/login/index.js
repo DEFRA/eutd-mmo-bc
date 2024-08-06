@@ -1,25 +1,22 @@
-import { homeController } from '~/src/server/home/controller.js'
+import { loginController } from '~/src/server/admin/login/controller.js'
 
 /**
- * Sets up the routes used in the home page.
+ * Sets up the routes used in the /admin/login page.
  * These routes are registered in src/server/router.js.
- */
-
-/**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
-export const home = {
+export const login = {
   plugin: {
-    name: 'home',
+    name: 'login',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/',
+          path: '/admin/login',
           options: {
             auth: false
           },
-          ...homeController
+          ...loginController
         }
       ])
     }

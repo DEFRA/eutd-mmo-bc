@@ -10,6 +10,8 @@ import { secureContext } from '~/src/server/common/helpers/secure-context/index.
 import { sessionCache } from '~/src/server/common/helpers/session-cache/session-cache.js'
 import { getCacheEngine } from '~/src/server/common/helpers/session-cache/cache-engine.js'
 import { pulse } from '~/src/server/common/helpers/pulse.js'
+import cookie from '@hapi/cookie'
+import { cookieConfig } from '~/src/config/auth.js'
 
 const isProduction = config.get('isProduction')
 
@@ -34,6 +36,9 @@ export async function createServer() {
         xss: 'enabled',
         noSniff: true,
         xframe: true
+      },
+      json: {
+        space: '2'
       }
     },
     router: {
@@ -52,6 +57,17 @@ export async function createServer() {
   if (isProduction) {
     await server.register(secureContext)
   }
+
+  await server.register(cookie)
+
+  server.auth.strategy('session-auth', 'cookie', {
+    cookie: cookieConfig.cookie,
+    redirectTo: 'admin/login',
+    validateFunc: (_request, session) =>
+      session.authenticated
+        ? { valid: true, credentials: { username: 'admin', password: 'admin' } }
+        : { valid: false }
+  })
 
   await server.register([
     pulse,
