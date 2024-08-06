@@ -7,6 +7,7 @@ export const homeController = {
   handler(request, h) {
     return h.view('home/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',
+<<<<<<< HEAD
       heading: 'Enter the certificate number you wish to validate',
       breadcrumbs: [
         {
@@ -17,6 +18,9 @@ export const homeController = {
           text: 'Validate Certificate Number'
         }
       ]
+=======
+      heading: 'Home'
+>>>>>>> 9858d5d (adding home page content)
     })
   }
 }

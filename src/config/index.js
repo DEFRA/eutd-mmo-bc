@@ -41,7 +41,7 @@ export const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'eutd-mmo-bc'
+    default: 'Check an Export Certificate'
   },
   root: {
     doc: 'Project root',
