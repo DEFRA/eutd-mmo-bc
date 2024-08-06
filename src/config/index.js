@@ -159,7 +159,14 @@ export const config = convict({
       env: 'USE_SINGLE_INSTANCE_CACHE'
     }
   }),
-  users: /** @type {SchemaObj<string>} */ getUsers()
+  users: /** @type {SchemaObj<string>} */ (getUsers()),
+  authCookiePassword: /** @type {SchemaObj<string | null>} */ ({
+    doc: 'Password for the auth cookie',
+    format: String,
+    nullable: true,
+    default: 'the-password-must-be-at-least-60-characters-long',
+    env: 'COOKIE_PASSWORD'
+  })
 })
 
 config.validate({ allowed: 'strict' })

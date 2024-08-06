@@ -13,9 +13,6 @@ export const admin = {
         {
           method: 'GET',
           path: '/admin',
-          options: {
-            auth: 'simple'
-          },
           ...adminController
         }
       ])

@@ -1,5 +1,5 @@
 import { loginController } from '~/src/server/admin/login/controller.js'
-
+import { config } from '~/src/config/index.js'
 /**
  * Sets up the routes used in the /admin/login page.
  * These routes are registered in src/server/router.js.
@@ -17,6 +17,33 @@ export const login = {
             auth: false
           },
           ...loginController
+        },
+        {
+          method: 'POST',
+          path: '/admin/login',
+          options: {
+            auth: false
+          },
+          handler: (request, h) => {
+            const { username, password } = request.payload
+            const users = config.get('users')
+            let validUser = true
+            const userPassword = users[username]
+            if (!userPassword) {
+              validUser = false
+            }
+
+            if (validUser && userPassword !== password) {
+              validUser = false
+            }
+
+            if (validUser) {
+              request.cookieAuth.set({ authenticated: true })
+              return h.redirect('/admin')
+            } else {
+              return h.redirect('/admin/login').takeover()
+            }
+          }
         }
       ])
     }
