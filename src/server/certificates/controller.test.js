@@ -18,7 +18,7 @@ describe('#certificatesController', () => {
   })
 
   beforeEach(() => {
-    mockGetCertificate = jest.spyOn(Certificates, 'get')
+    mockGetCertificate = jest.spyOn(Certificates, 'getCertificateDetails')
     mockGetCertificate.mockReturnValue(result)
   })
 

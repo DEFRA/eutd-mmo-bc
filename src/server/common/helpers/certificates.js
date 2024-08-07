@@ -3,7 +3,7 @@
  * @param {string} certNumber
  * @returns string
  */
-export const get = (certNumber) => ({
+export const getCertificateDetails = (certNumber) => ({
   certNumber,
   timestamp: '12 MAY 2024',
   status: 'COMPLETE',
