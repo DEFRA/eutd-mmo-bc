@@ -124,7 +124,7 @@ export const config = convict({
     enabled: {
       doc: 'Enable Redis on your Frontend.',
       format: Boolean,
-      default: false,
+      default: true,
       env: 'REDIS_ENABLED'
     },
     host: {
