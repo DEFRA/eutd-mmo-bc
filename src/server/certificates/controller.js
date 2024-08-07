@@ -1,5 +1,5 @@
-import { isEmpty } from 'lodash'
-import { get } from '../common/helpers/certificates.js'
+import * as _ from 'lodash'
+import { getCertificateDetails } from '../common/helpers/certificates.js'
 
 /**
  * A certificates check endpoint. Used by the platform to check if the provided certificates exists.
@@ -9,11 +9,11 @@ export const certificatesController = {
   handler(request, h) {
     const certNumber = request.query.certNumber
 
-    if (isEmpty(certNumber) || certNumber === 'GBR-2018-CC-123A4BC56') {
+    if (_.isEmpty(certNumber) || certNumber === 'GBR-2018-CC-123A4BC56') {
       return h.view('result/index')
     }
 
-    const resultModel = get(certNumber)
+    const resultModel = getCertificateDetails(certNumber)
     return h.view('result/index', resultModel)
   }
 }
