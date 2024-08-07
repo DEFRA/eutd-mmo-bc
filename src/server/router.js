@@ -1,10 +1,12 @@
 import inert from '@hapi/inert'
 
+import { admin } from '~/src/server/admin/index.js'
 import { health } from '~/src/server/health/index.js'
 import { home } from '~/src/server/home/index.js'
-import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files.js'
-import { admin } from '~/src/server/admin/index.js'
 import { login } from '~/src/server/admin/login/index.js'
+import { result } from '~/src/server/result/index.js'
+import { certificates } from '~/src/server/certificates/index.js'
+import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files.js'
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
@@ -18,7 +20,7 @@ export const router = {
       await server.register([health])
 
       // Application specific routes, add your own routes here
-      await server.register([home, admin, login])
+      await server.register([home, admin, login, certificates, result])
 
       // Static assets
       await server.register([serveStaticFiles])

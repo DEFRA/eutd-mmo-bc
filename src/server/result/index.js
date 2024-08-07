@@ -1,19 +1,25 @@
-import { aboutController } from '~/src/server/about/controller.js'
+import { resultController } from '~/src/server/result/controller.js'
 
 /**
- * Sets up the routes used in the /about page.
+ * Sets up the routes used in the result page.
  * These routes are registered in src/server/router.js.
+ */
+
+/**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
-export const about = {
+export const result = {
   plugin: {
-    name: 'about',
+    name: 'result',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/about',
-          ...aboutController
+          path: '/result',
+          options: {
+            auth: false
+          },
+          ...resultController
         }
       ])
     }
