@@ -1,0 +1,53 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ appHeading({
+        text: heading
+      }) }}
+
+      <form action="/admin/enter-certificate-status" method="post" novalidate>
+        {{ govukRadios({
+          fieldset: {
+            legend: {
+              text: "What is the Certificate Status?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--xl"
+            }
+          },
+          idPrefix: "status",
+          name: "status",
+          items: [
+            {
+              value: "DRAFT",
+              text: "Draft",
+              checked: status === 'DRAFT'
+            },
+            {
+              value: "COMPLETE",
+              text: "Complete",
+              checked: status === 'COMPLETE'
+            },
+            {
+              value: "VOID",
+              text: "Void",
+              checked: status === 'VOID'
+            }
+          ]
+        }) }}
+
+        <input type="hidden" name="certNumber" value="{{ certNumber }}">
+        <input type="hidden" name="timestamp" value="{{ timestamp }}">
+
+        {{ govukButton({
+          text: "Save to system",
+          preventDoubleClick: true
+        }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
