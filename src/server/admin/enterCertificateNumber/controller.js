@@ -3,11 +3,11 @@
  * Provided as an example, remove or modify as required.
  * @satisfies {Partial<ServerRoute>}
  */
-export const adminController = {
+export const enterCertificateNumberController = {
   handler(request, h) {
-    return h.view('admin/index', {
+    return h.view('admin/enterCertificateNumber/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',
-      heading: 'Enter Certificate Details',
+      heading: 'Enter the certificate number',
       breadcrumbs: [
         {
           text: 'Home',
@@ -16,7 +16,10 @@ export const adminController = {
         {
           text: 'Enter Certificate Details'
         }
-      ]
+      ],
+      certNumber: request.yar.get('certNumber'),
+      timestamp: request.yar.get('timestamp'),
+      status: request.yar.get('status')
     })
   }
 }
