@@ -1,7 +1,8 @@
 import {
   S3Client,
   GetObjectCommand,
-  ListBucketsCommand
+  ListBucketsCommand,
+  PutObjectCommand
 } from '@aws-sdk/client-s3'
 
 import { config } from '~/src/config/index.js'
@@ -78,4 +79,25 @@ async function download(key) {
   return JSON.parse(await streamToString(data.Body))
 }
 
-export { download }
+async function upload(key, data) {
+  const logger = createLogger()
+  const client = createS3()
+  const awsConfig = config.get('aws')
+
+  logger.info(`uploading ${key} to bucket ${awsConfig.bucketName}`)
+
+  const input = {
+    Body: data,
+    Bucket: awsConfig.bucketName,
+    Key: key
+  }
+  const command = new PutObjectCommand(input)
+  const result = await client.send(command).catch((err) => {
+    logger.error(err, 'Upload failed')
+    return false
+  })
+  logger.info('Upload complete')
+  return result
+}
+
+export { download, upload }
