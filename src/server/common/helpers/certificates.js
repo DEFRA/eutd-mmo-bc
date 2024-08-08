@@ -1,5 +1,9 @@
 import { format } from 'date-fns'
-import { download } from '~/src/server/common/helpers/repository/S3Bucket.js'
+import {
+  download,
+  upload
+} from '~/src/server/common/helpers/repository/S3Bucket.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 
 const BUCKET_FILENAME = 'ecert_certificates.json'
 const STATUS_COMPLETE = 'COMPLETE'
@@ -29,4 +33,24 @@ export const getCertificateDetails = async (certNumber) => {
 
 export const getList = async () => {
   return await download(BUCKET_FILENAME)
+}
+
+export const uploadCertificateDetails = async (newCertificate) => {
+  const logger = createLogger()
+  const list = await getList()
+
+  if (!newCertificate.certNumber || !newCertificate.timestamp) {
+    logger.error('"certNumber" and "timestamp" are required for upload')
+    return false
+  }
+
+  // removes the timezone from the date
+  newCertificate.timestamp = newCertificate.timestamp.split('+')[0] + '.000Z'
+
+  const newCertificatelist = [
+    newCertificate,
+    ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
+  ]
+
+  return await upload(BUCKET_FILENAME, JSON.stringify(newCertificatelist))
 }
