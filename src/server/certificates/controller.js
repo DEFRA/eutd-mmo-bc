@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import { getCertificateDetails } from '../common/helpers/certificates.js'
 
 /**
@@ -6,14 +5,18 @@ import { getCertificateDetails } from '../common/helpers/certificates.js'
  * @satisfies {Partial<ServerRoute>}
  */
 export const certificatesController = {
-  handler(request, h) {
-    const certNumber = request.query.certNumber
+  async handler(request, h) {
+    const { certNumber } = request.query
 
-    if (_.isEmpty(certNumber) || certNumber === 'GBR-2018-CC-123A4BC56') {
+    if (
+      certNumber === undefined ||
+      certNumber === '' ||
+      certNumber === 'GBR-2018-CC-123A4BC56'
+    ) {
       return h.view('result/index')
     }
 
-    const resultModel = getCertificateDetails(certNumber)
+    const resultModel = await getCertificateDetails(certNumber.trim())
     return h.view('result/index', resultModel)
   }
 }

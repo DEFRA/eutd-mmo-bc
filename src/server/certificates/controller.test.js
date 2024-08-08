@@ -19,7 +19,7 @@ describe('#certificatesController', () => {
 
   beforeEach(() => {
     mockGetCertificate = jest.spyOn(Certificates, 'getCertificateDetails')
-    mockGetCertificate.mockReturnValue(result)
+    mockGetCertificate.mockResolvedValue(result)
   })
 
   afterEach(async () => {
@@ -47,10 +47,31 @@ describe('#certificatesController', () => {
     expect(statusCode).toBe(200)
   })
 
+  test('Should render the results page with undefined cert number', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/certificates'
+    })
+
+    expect(payload).toContain('The certificate number entered is not valid')
+    expect(statusCode).toBe(200)
+  })
+
   test('Should get details for a given certificate', async () => {
     const { statusCode, payload } = await server.inject({
       method: 'GET',
       url: '/certificates?certNumber=GBR-2024-CC-123A4BC56'
+    })
+
+    expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
+    expect(payload).toContain('Validation confirmed')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should get details for a given certificate with spaces', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/certificates?certNumber= GBR-2024-CC-123A4BC56 '
     })
 
     expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
