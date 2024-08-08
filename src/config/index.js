@@ -166,7 +166,39 @@ export const config = convict({
     nullable: true,
     default: 'the-password-must-be-at-least-60-characters-long',
     env: 'COOKIE_PASSWORD'
-  })
+  }),
+  aws: /** @type {SchemaObj<string | null>} */ ({
+    accessKeyId: {
+      doc: 'AWS access key id',
+      format: String,
+      default: 'test',
+      env: 'AWS_ACCESS_KEY_ID'
+    },
+    secretAccessKey: {
+      doc: 'AWS secret access key',
+      format: String,
+      default: 'test',
+      env: 'AWS_SECRET_ACCESS_KEY'
+    },
+    region: {
+      doc: 'AWS region',
+      format: String,
+      default: 'eu-west-2',
+      env: 'AWS_BUCKET_REGION'
+    },
+    bucketName: {
+      doc: 'AWS bucket name',
+      format: String,
+      default: 'mmo-check-exp-cert-dev',
+      env: 'AWS_BUCKET_NAME'
+    }
+  }),
+  apiAuth: {
+    doc: 'Used to authenticate API requests',
+    format: String,
+    default: '00000000-0000-1000-A000-000000000000',
+    env: 'API_AUTH_TOKEN'
+  }
 })
 
 config.validate({ allowed: 'strict' })
