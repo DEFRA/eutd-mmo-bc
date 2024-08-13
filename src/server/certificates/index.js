@@ -1,4 +1,8 @@
-import { certificatesController } from '~/src/server/certificates/controller.js'
+import {
+  certificatesController,
+  updateCertificateDetails,
+  removeCertificateDetails
+} from '~/src/server/certificates/controller.js'
 
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
@@ -11,9 +15,27 @@ export const certificates = {
         method: 'GET',
         path: '/certificates',
         options: {
-          auth: false
+          auth: false // Need to update to api-key-strategy
         },
         ...certificatesController
+      })
+
+      server.route({
+        method: 'PUT',
+        path: '/certificates/{certificateNumber}',
+        options: {
+          auth: 'api-key-strategy'
+        },
+        ...updateCertificateDetails
+      })
+
+      server.route({
+        method: 'DELETE',
+        path: '/certificates/{certificateNumber}',
+        options: {
+          auth: 'api-key-strategy'
+        },
+        ...removeCertificateDetails
       })
     }
   }
