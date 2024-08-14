@@ -1,7 +1,8 @@
 import {
   certificatesController,
   updateCertificateDetails,
-  removeCertificateDetails
+  removeCertificateDetails,
+  getCertificates
 } from '~/src/server/certificates/controller.js'
 
 /**
@@ -21,8 +22,17 @@ export const certificates = {
       })
 
       server.route({
+        method: 'GET',
+        path: '/api/certificates',
+        options: {
+          auth: 'api-key-strategy' // Need to update to api-key-strategy
+        },
+        ...getCertificates
+      })
+
+      server.route({
         method: 'PUT',
-        path: '/certificates/{certificateNumber}',
+        path: '/api/certificates/{certificateNumber}',
         options: {
           auth: 'api-key-strategy'
         },
@@ -31,7 +41,7 @@ export const certificates = {
 
       server.route({
         method: 'DELETE',
-        path: '/certificates/{certificateNumber}',
+        path: '/api/certificates/{certificateNumber}',
         options: {
           auth: 'api-key-strategy'
         },

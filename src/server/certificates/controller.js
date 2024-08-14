@@ -1,7 +1,8 @@
 import {
   getCertificateDetails,
   uploadCertificateDetails,
-  removeDocument
+  removeDocument,
+  getList
 } from '../common/helpers/certificates.js'
 
 /**
@@ -22,6 +23,13 @@ export const certificatesController = {
 
     const resultModel = await getCertificateDetails(certNumber.trim())
     return h.view('result/index', resultModel)
+  }
+}
+
+export const getCertificates = {
+  async handler() {
+    const resultModel = await getList()
+    return resultModel
   }
 }
 
