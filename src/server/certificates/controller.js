@@ -28,28 +28,37 @@ export const certificatesController = {
 
 export const getCertificates = {
   async handler() {
-    const resultModel = await getList()
-    return resultModel
+    return await getList()
   }
 }
 
 export const updateCertificateDetails = {
-  async handler(request) {
-    const { certificateNumber } = request.params
+  async handler(request, h) {
     const payload = request.payload
-    const resultModel = await uploadCertificateDetails(
-      certificateNumber,
-      payload
-    )
-    return `Certificate Data for ${JSON.stringify(resultModel)}`
+    const result = await uploadCertificateDetails(payload)
+    if (!result) {
+      return h
+        .response(
+          `Error updating certificate ${request.params.certificateNumber}`
+        )
+        .code(400)
+    } else {
+      return h.response(`Success`)
+    }
   }
 }
 
 export const removeCertificateDetails = {
-  async handler(request) {
+  async handler(request, h) {
     const { certificateNumber } = request.params
-    const resultModel = await removeDocument(certificateNumber)
-    return `Certificate Data for ${JSON.stringify(resultModel)}`
+    const result = await removeDocument(certificateNumber)
+    if (!result) {
+      return h
+        .response(`Error removing certificate ${certificateNumber}`)
+        .code(400)
+    } else {
+      return h.response(`Success`)
+    }
   }
 }
 

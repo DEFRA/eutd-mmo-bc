@@ -16,7 +16,7 @@ export const certificates = {
         method: 'GET',
         path: '/certificates',
         options: {
-          auth: false // Need to update to api-key-strategy
+          auth: false
         },
         ...certificatesController
       })
@@ -25,7 +25,7 @@ export const certificates = {
         method: 'GET',
         path: '/api/certificates',
         options: {
-          auth: 'api-key-strategy' // Need to update to api-key-strategy
+          auth: 'api-key-strategy'
         },
         ...getCertificates
       })
