@@ -100,12 +100,14 @@ describe('API calls for GET/PUT/DELETE', () => {
   let server
   let mockGetCertificate, mockPutCertificate, mockDeleteCertificate
   const apiHeaderKey = config.get('apiAuth')
-  const result = {
-    certNumber: 'GBR-2024-CC-123A4BC56',
-    timestamp: '12 MAY 2024',
-    status: 'COMPLETE',
-    isValid: true
-  }
+  const result = [
+    {
+      certNumber: 'GBR-2024-CC-123A4BC56',
+      timestamp: '12 MAY 2024',
+      status: 'COMPLETE',
+      isValid: true
+    }
+  ]
 
   beforeAll(async () => {
     server = await createServer()
