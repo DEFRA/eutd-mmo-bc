@@ -1,5 +1,6 @@
 import { createServer } from '~/src/server/index.js'
 import * as Certificates from '~/src/server/common/helpers/certificates.js'
+import { config } from '~/src/config/index.js'
 
 describe('#certificatesController', () => {
   /** @type {Server} */
@@ -90,6 +91,125 @@ describe('#certificatesController', () => {
     })
 
     expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
+    expect(statusCode).toBe(500)
+  })
+})
+
+describe('API calls for GET/PUT/DELETE', () => {
+  /** @type {Server} */
+  let server
+  let mockGetCertificate, mockPutCertificate, mockDeleteCertificate
+  const apiHeaderKey = config.get('apiAuth')
+  const result = {
+    certNumber: 'GBR-2024-CC-123A4BC56',
+    timestamp: '12 MAY 2024',
+    status: 'COMPLETE',
+    isValid: true
+  }
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  beforeEach(() => {
+    mockGetCertificate = jest.spyOn(Certificates, 'getList')
+    mockPutCertificate = jest.spyOn(Certificates, 'uploadCertificateDetails')
+    mockDeleteCertificate = jest.spyOn(Certificates, 'removeDocument')
+    mockGetCertificate.mockResolvedValue(result)
+    // mockPutCertificate.mockResolvedValue(result)
+    // mockDeleteCertificate.mockResolvedValue(result)
+  })
+
+  afterEach(async () => {
+    await server.stop()
+    mockGetCertificate.mockRestore()
+    mockPutCertificate.mockRestore()
+  })
+
+  test('Should call the api certficates api successfully', async () => {
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: '/api/certificates'
+    })
+
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should update the certificates successfully', async () => {
+    mockPutCertificate.mockResolvedValue(true)
+    const { statusCode, payload } = await server.inject({
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(payload).toContain('Success')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should delete the certificate details successfully', async () => {
+    mockDeleteCertificate.mockResolvedValue(true)
+    const { statusCode, payload } = await server.inject({
+      method: 'DELETE',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(payload).toContain('Success')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should throw error when updating the certificate', async () => {
+    mockPutCertificate.mockResolvedValue(false)
+    const { statusCode } = await server.inject({
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(statusCode).toBe(400)
+  })
+
+  test('Should throw error when removing the certificate', async () => {
+    mockDeleteCertificate.mockResolvedValue(false)
+    const { statusCode } = await server.inject({
+      method: 'DELETE',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(statusCode).toBe(400)
+  })
+
+  test('Should throw 500 error when updating the certificate', async () => {
+    mockPutCertificate.mockRejectedValue(Error('my error'))
+    const { statusCode } = await server.inject({
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(statusCode).toBe(500)
+  })
+
+  test('Should throw 500 error when removing the certificate', async () => {
+    mockDeleteCertificate.mockRejectedValue(Error('my error'))
+    const { statusCode } = await server.inject({
+      method: 'DELETE',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: `/api/certificates/certificateNumber`
+    })
     expect(statusCode).toBe(500)
   })
 })
