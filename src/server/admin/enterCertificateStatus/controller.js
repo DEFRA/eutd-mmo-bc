@@ -1,3 +1,5 @@
+import { getYarValue } from '~/src/server/common/helpers/yar-helper.js'
+
 /**
  * A GDS styled example about page controller.
  * Provided as an example, remove or modify as required.
@@ -16,9 +18,9 @@ export const enterCertificateStatusController = {
           text: 'Enter Certificate Details'
         }
       ],
-      certNumber: request.yar.get('certNumber'),
-      timestamp: request.yar.get('timestamp'),
-      status: request.yar.get('status')
+      certNumber: getYarValue(request, 'certNumber'),
+      timestamp: getYarValue(request, 'timestamp'),
+      status: getYarValue(request, 'status')
     })
   }
 }

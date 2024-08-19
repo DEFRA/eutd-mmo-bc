@@ -16,9 +16,9 @@ export const checkCertificateDetailsRoutes = [
     path: '/admin/check-certificate-details',
     handler: async (request, h) => {
       const newCert = {
-        certNumber: request.yar.get('certNumber'),
-        timestamp: request.yar.get('timestamp'),
-        status: request.yar.get('status')
+        certNumber: request.payload.certNumber,
+        timestamp: request.payload.timestamp,
+        status: request.payload.status
       }
       const result = await uploadCertificateDetails(newCert)
       if (!result) {

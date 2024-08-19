@@ -1,3 +1,8 @@
+import {
+  getYarValue,
+  clearYarValue
+} from '~/src/server/common/helpers/yar-helper.js'
+
 /**
  * A GDS styled example about page controller.
  * Provided as an example, remove or modify as required.
@@ -5,13 +10,13 @@
  */
 export const confirmationController = {
   handler(request, h) {
-    const certNumber = request.yar.get('certNumber')
-    const timestamp = request.yar.get('timestamp')
-    const status = request.yar.get('status')
+    const certNumber = getYarValue(request, 'certNumber')
+    const timestamp = getYarValue(request, 'timestamp')
+    const status = getYarValue(request, 'status')
 
-    request.yar.clear('certNumber')
-    request.yar.clear('timestamp')
-    request.yar.clear('status')
+    clearYarValue(request, 'certNumber')
+    clearYarValue(request, 'timestamp')
+    clearYarValue(request, 'status')
 
     return h.view('admin/confirmation/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',

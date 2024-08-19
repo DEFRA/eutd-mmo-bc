@@ -14,9 +14,9 @@ const getUsers = () => {
     // @ts-expect-error will be defined
     userCredentials = process.env.ADMIN_USER_CREDENTIALS
   } else {
-    userCredentials = 'eyJhZG1pbiI6ImFkbWluIn0='
+    userCredentials = [{ username: 'admin', password: 'admin' }]
   }
-  return JSON.parse(Buffer.from(userCredentials, 'base64').toString('utf8'))
+  return userCredentials
 }
 
 export const config = convict({
