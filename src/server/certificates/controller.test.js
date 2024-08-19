@@ -117,8 +117,6 @@ describe('API calls for GET/PUT/DELETE', () => {
     mockPutCertificate = jest.spyOn(Certificates, 'uploadCertificateDetails')
     mockDeleteCertificate = jest.spyOn(Certificates, 'removeDocument')
     mockGetCertificate.mockResolvedValue(result)
-    // mockPutCertificate.mockResolvedValue(result)
-    // mockDeleteCertificate.mockResolvedValue(result)
   })
 
   afterEach(async () => {
@@ -136,6 +134,18 @@ describe('API calls for GET/PUT/DELETE', () => {
       url: '/api/certificates'
     })
 
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should call the api certficates api and return data', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      url: '/api/certificates'
+    })
+    expect(JSON.parse(payload)).toEqual(result)
     expect(statusCode).toBe(200)
   })
 
