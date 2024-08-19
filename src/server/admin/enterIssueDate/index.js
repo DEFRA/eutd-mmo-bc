@@ -1,5 +1,7 @@
 import { enterIssueDateController } from '~/src/server/admin/enterIssueDate/controller.js'
 import { formatISO } from 'date-fns'
+import { setYarValue } from '~/src/server/common/helpers/yar-helper.js'
+
 /**
  * Sets up the routes used in the /admin/enter-issue-date page.
  * These routes are registered in src/server/router.js.
@@ -23,7 +25,7 @@ export const enterIssueDateRoutes = [
         year && day && month
           ? formatISO(new Date(year, month - 1, day))
           : undefined
-      request.yar.set('timestamp', timestamp)
+      setYarValue(request, 'timestamp', timestamp)
       return h.redirect('/admin/enter-certificate-status')
     }
   }

@@ -1,4 +1,5 @@
 import { enterCertificateStatusController } from '~/src/server/admin/enterCertificateStatus/controller.js'
+import { setYarValue } from '~/src/server/common/helpers/yar-helper.js'
 
 /**
  * Sets up the routes used in the /admin/enter-certificate-status page.
@@ -15,7 +16,7 @@ export const enterCertificateStatusRoutes = [
     method: 'POST',
     path: '/admin/enter-certificate-status',
     handler: (request, h) => {
-      request.yar.set('status', request.payload.status)
+      setYarValue(request, 'status', request.payload.status)
       return h.redirect('/admin/check-certificate-details')
     }
   }
