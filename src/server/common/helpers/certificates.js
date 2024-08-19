@@ -44,9 +44,6 @@ export const uploadCertificateDetails = async (newCertificate) => {
     return false
   }
 
-  // removes the timezone from the date
-  newCertificate.timestamp = newCertificate.timestamp.split('+')[0] + '.000Z'
-
   const newCertificatelist = [
     newCertificate,
     ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
