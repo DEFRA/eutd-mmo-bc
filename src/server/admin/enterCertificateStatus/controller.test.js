@@ -36,6 +36,7 @@ describe('#enterCerficateStatusController', () => {
     expect(payload).toContain('What is the Certificate Status?')
     expect(payload).toContain('2024-05-02T00:00:00.000Z')
     expect(payload).toContain('GBR-2018-CC-123A4AW15')
+    // prettier-ignore
     // eslint-disable-next-line
     expect(payload).toContain('value=\"COMPLETE\" checked')
   })

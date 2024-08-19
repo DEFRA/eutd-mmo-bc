@@ -50,10 +50,13 @@ describe('#enterIssueDateController', () => {
     })
 
     expect(payload).toContain('What is the Issue Date?')
+    // prettier-ignore
     // eslint-disable-next-line
     expect(payload).toContain('value=\"02\"')
+    // prettier-ignore
     // eslint-disable-next-line
     expect(payload).toContain('value=\"05\"')
+    // prettier-ignore
     // eslint-disable-next-line
     expect(payload).toContain('value=\"2024\"')
     expect(payload).toContain('GBR-2018-CC-123A4AW15')
