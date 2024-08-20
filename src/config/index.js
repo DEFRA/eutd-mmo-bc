@@ -178,7 +178,7 @@ export const config = convict({
       doc: 'AWS bucket name',
       format: String,
       default: 'mmo-check-exp-cert-dev',
-      env: 'AWS_BUCKET_NAME'
+      env: 'EXPORT_CERTIFICATES_BUCKET'
     },
     s3Endpoint: {
       doc: 'AWS S3 endpoint',
