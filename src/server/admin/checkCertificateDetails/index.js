@@ -20,7 +20,7 @@ export const checkCertificateDetailsRoutes = [
         timestamp: request.payload.timestamp,
         status: request.payload.status
       }
-      const result = await uploadCertificateDetails(newCert)
+      const result = await uploadCertificateDetails(request, newCert)
       if (!result) {
         return h.redirect('/admin/check-certificate-details').takeover()
       } else {

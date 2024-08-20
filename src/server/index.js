@@ -11,6 +11,7 @@ import { sessionCache } from '~/src/server/common/helpers/session-cache/session-
 import { getCacheEngine } from '~/src/server/common/helpers/session-cache/cache-engine.js'
 import { pulse } from '~/src/server/common/helpers/pulse.js'
 import cookie from '@hapi/cookie'
+import { s3ClientPlugin } from '~/src/server/common/helpers/repository/S3Bucket.js'
 
 const isProduction = config.get('isProduction')
 
@@ -51,7 +52,7 @@ export async function createServer() {
     ]
   })
 
-  await server.register(requestLogger)
+  await server.register([requestLogger, s3ClientPlugin])
 
   if (isProduction) {
     await server.register(secureContext)

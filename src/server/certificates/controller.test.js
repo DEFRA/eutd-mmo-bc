@@ -64,7 +64,7 @@ describe('#certificatesController', () => {
       url: '/certificates?certNumber=GBR-2024-CC-123A4BC56'
     })
 
-    expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
+    expect(mockGetCertificate.mock.calls[0][1]).toBe('GBR-2024-CC-123A4BC56')
     expect(payload).toContain('Validation confirmed')
     expect(statusCode).toBe(200)
   })
@@ -75,7 +75,7 @@ describe('#certificatesController', () => {
       url: '/certificates?certNumber= GBR-2024-CC-123A4BC56 '
     })
 
-    expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
+    expect(mockGetCertificate.mock.calls[0][1]).toBe('GBR-2024-CC-123A4BC56')
     expect(payload).toContain('Validation confirmed')
     expect(statusCode).toBe(200)
   })
@@ -90,7 +90,7 @@ describe('#certificatesController', () => {
       url: '/certificates?certNumber=GBR-2024-CC-123A4BC56'
     })
 
-    expect(mockGetCertificate).toHaveBeenCalledWith('GBR-2024-CC-123A4BC56')
+    expect(mockGetCertificate.mock.calls[0][1]).toBe('GBR-2024-CC-123A4BC56')
     expect(statusCode).toBe(500)
   })
 })
