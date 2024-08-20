@@ -51,3 +51,19 @@ export const uploadCertificateDetails = async (newCertificate) => {
 
   return await upload(BUCKET_FILENAME, JSON.stringify(newCertificatelist))
 }
+
+export const removeDocument = async (certificateNumber) => {
+  const logger = createLogger()
+  const list = await getList()
+
+  if (!certificateNumber) {
+    logger.error('"certNumber" is required for upload')
+    return false
+  }
+
+  const filteredList = list.filter(
+    (entry) => entry.certNumber !== certificateNumber
+  )
+
+  return await upload(BUCKET_FILENAME, JSON.stringify(filteredList))
+}

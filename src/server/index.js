@@ -72,6 +72,12 @@ export async function createServer() {
 
   server.auth.default('session-auth')
 
+  // Register the custom authentication scheme
+  server.auth.scheme('api-key', apiKeyScheme)
+
+  // Define an authentication strategy using the custom scheme
+  server.auth.strategy('api-key-strategy', 'api-key')
+
   await server.register([
     pulse,
     sessionCache,
@@ -82,4 +88,21 @@ export async function createServer() {
   server.ext('onPreResponse', catchAll)
 
   return server
+}
+
+const apiKeyScheme = () => {
+  return {
+    authenticate: (request, h) => {
+      const apiKey = request.headers['x-api-key']
+
+      if (!apiKey || apiKey !== config.get('apiAuth')) {
+        return h.unauthenticated(new Error('Invalid API key'), {
+          credentials: null
+        })
+      }
+
+      const credentials = { apiKey }
+      return h.authenticated({ credentials })
+    }
+  }
 }
