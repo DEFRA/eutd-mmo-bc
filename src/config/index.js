@@ -168,18 +168,6 @@ export const config = convict({
     env: 'COOKIE_PASSWORD'
   }),
   aws: /** @type {SchemaObj<string | null>} */ ({
-    accessKeyId: {
-      doc: 'AWS access key id',
-      format: String,
-      default: 'test',
-      env: 'AWS_ACCESS_KEY_ID'
-    },
-    secretAccessKey: {
-      doc: 'AWS secret access key',
-      format: String,
-      default: 'test',
-      env: 'AWS_SECRET_ACCESS_KEY'
-    },
     region: {
       doc: 'AWS region',
       format: String,
@@ -191,6 +179,12 @@ export const config = convict({
       format: String,
       default: 'mmo-check-exp-cert-dev',
       env: 'AWS_BUCKET_NAME'
+    },
+    s3Endpoint: {
+      doc: 'AWS S3 endpoint',
+      format: String,
+      default: 'http://localhost:4566',
+      env: 'S3_ENDPOINT'
     }
   }),
   apiAuth: {

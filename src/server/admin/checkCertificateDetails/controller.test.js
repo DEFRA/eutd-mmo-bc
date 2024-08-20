@@ -63,7 +63,7 @@ describe('#checkCertificateDetailsController', () => {
       }
     })
 
-    expect(uploadSpy.mock.calls[0][0]).toStrictEqual({
+    expect(uploadSpy.mock.calls[0][1]).toStrictEqual({
       certNumber: 'GBR-2018-CC-123A4AW22',
       timestamp: '2024-05-02T00:00:00.000Z',
       status: 'DRAFT'
@@ -92,7 +92,7 @@ describe('#checkCertificateDetailsController', () => {
       }
     })
 
-    expect(uploadSpy.mock.calls[0][0]).toStrictEqual({
+    expect(uploadSpy.mock.calls[0][1]).toStrictEqual({
       certNumber: 'GBR-2018-CC-123A4AW22',
       timestamp: '2024-05-02T00:00:00.000Z',
       status: 'DRAFT'

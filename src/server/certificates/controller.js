@@ -21,21 +21,21 @@ export const certificatesController = {
       return h.view('result/index')
     }
 
-    const resultModel = await getCertificateDetails(certNumber.trim())
+    const resultModel = await getCertificateDetails(request, certNumber.trim())
     return h.view('result/index', resultModel)
   }
 }
 
 export const getCertificates = {
-  async handler() {
-    return await getList()
+  async handler(request) {
+    return await getList(request)
   }
 }
 
 export const updateCertificateDetails = {
   async handler(request, h) {
     const payload = request.payload
-    const result = await uploadCertificateDetails(payload)
+    const result = await uploadCertificateDetails(request, payload)
     if (!result) {
       return h
         .response(
@@ -51,7 +51,7 @@ export const updateCertificateDetails = {
 export const removeCertificateDetails = {
   async handler(request, h) {
     const { certificateNumber } = request.params
-    const result = await removeDocument(certificateNumber)
+    const result = await removeDocument(request, certificateNumber)
     if (!result) {
       return h
         .response(`Error removing certificate ${certificateNumber}`)

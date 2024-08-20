@@ -8,8 +8,8 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 const BUCKET_FILENAME = 'ecert_certificates.json'
 const STATUS_COMPLETE = 'COMPLETE'
 
-export const getCertificateDetails = async (certNumber) => {
-  const list = await getList()
+export const getCertificateDetails = async (request, certNumber) => {
+  const list = await getList(request)
   const certificate = list.find((entry) => entry.certNumber === certNumber)
 
   if (certificate) {
@@ -31,13 +31,13 @@ export const getCertificateDetails = async (certNumber) => {
   }
 }
 
-export const getList = async () => {
-  return await download(BUCKET_FILENAME)
+export const getList = async (request) => {
+  return await download(request.s3, BUCKET_FILENAME)
 }
 
-export const uploadCertificateDetails = async (newCertificate) => {
+export const uploadCertificateDetails = async (request, newCertificate) => {
   const logger = createLogger()
-  const list = await getList()
+  const list = await getList(request)
 
   if (!newCertificate.certNumber || !newCertificate.timestamp) {
     logger.error('"certNumber" and "timestamp" are required for upload')
@@ -49,12 +49,16 @@ export const uploadCertificateDetails = async (newCertificate) => {
     ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
   ]
 
-  return await upload(BUCKET_FILENAME, JSON.stringify(newCertificatelist))
+  return await upload(
+    request.s3,
+    BUCKET_FILENAME,
+    JSON.stringify(newCertificatelist)
+  )
 }
 
-export const removeDocument = async (certificateNumber) => {
+export const removeDocument = async (request, certificateNumber) => {
   const logger = createLogger()
-  const list = await getList()
+  const list = await getList(request)
 
   if (!certificateNumber) {
     logger.error('"certNumber" is required for upload')
@@ -65,5 +69,5 @@ export const removeDocument = async (certificateNumber) => {
     (entry) => entry.certNumber !== certificateNumber
   )
 
-  return await upload(BUCKET_FILENAME, JSON.stringify(filteredList))
+  return await upload(request.s3, BUCKET_FILENAME, JSON.stringify(filteredList))
 }

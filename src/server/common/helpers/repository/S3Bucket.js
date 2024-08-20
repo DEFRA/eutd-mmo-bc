@@ -4,35 +4,36 @@ import {
   ListBucketsCommand,
   PutObjectCommand
 } from '@aws-sdk/client-s3'
-
 import { config } from '~/src/config/index.js'
-
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 
-function createS3() {
-  try {
-    const logger = createLogger()
-    logger.info('configure AWS client')
+const s3ClientPlugin = {
+  plugin: {
+    name: 's3Client',
+    version: '0.1.0',
+    register: (server) => {
+      const logger = createLogger()
+      logger.info('configure AWS client')
+      const awsConfig = config.get('aws')
+      const isDevelopment = config.get('isDevelopment')
 
-    const awsConfig = config.get('aws')
-    const isDevelopment = config.get('isDevelopment')
-    const s3 = new S3Client({
-      region: awsConfig.region,
-      forcePathStyle: isDevelopment,
-      endpoint: isDevelopment ? 'http://localhost:4566' : undefined,
-      credentials: {
-        accessKeyId: awsConfig.accessKeyId,
-        secretAccessKey: awsConfig.secretAccessKey
-      }
-    })
+      const s3Client = new S3Client({
+        region: awsConfig.region,
+        forcePathStyle: isDevelopment,
+        endpoint: awsConfig.s3Endpoint
+      })
 
-    logger.info(
-      `setup bucket client accessKeyId: ${awsConfig.accessKeyId} region: ${awsConfig.region}`
-    )
-    return s3
-  } catch (error) {
-    const logger = createLogger()
-    logger.error(error)
+      logger.info(
+        `setup bucket client accessKeyId: ${awsConfig.accessKeyId} region: ${awsConfig.region}`
+      )
+      server.decorate('request', 's3', s3Client)
+      server.decorate('server', 's3', s3Client)
+
+      server.events.on('stop', () => {
+        server.logger.info(`Closing S3 client`)
+        s3Client.destroy()
+      })
+    }
   }
 }
 
@@ -45,23 +46,23 @@ async function streamToString(stream) {
   })
 }
 
-async function download(key) {
+async function download(s3Client, key) {
   const logger = createLogger()
-  const client = createS3()
+
   const awsConfig = config.get('aws')
 
   logger.info(`downloading ${key} from bucket ${awsConfig.bucketName}`)
 
   let input = {}
   const command = new ListBucketsCommand(input)
-  const response = await client.send(command)
+  const response = await s3Client.send(command)
 
   const hasBucket = response.Buckets?.some(
     (bucket) => bucket.Name === awsConfig.bucketName
   )
 
   if (!hasBucket) {
-    client.destroy()
+    s3Client.destroy()
 
     return []
   }
@@ -72,16 +73,15 @@ async function download(key) {
   }
 
   const getCommand = new GetObjectCommand(input)
-  const data = await client.send(getCommand)
+  const data = await s3Client.send(getCommand)
 
   logger.info('download complete')
 
   return JSON.parse(await streamToString(data.Body))
 }
 
-async function upload(key, data) {
+async function upload(s3Client, key, data) {
   const logger = createLogger()
-  const client = createS3()
   const awsConfig = config.get('aws')
 
   logger.info(`uploading ${key} to bucket ${awsConfig.bucketName}`)
@@ -92,7 +92,7 @@ async function upload(key, data) {
     Key: key
   }
   const command = new PutObjectCommand(input)
-  const result = await client.send(command).catch((err) => {
+  const result = await s3Client.send(command).catch((err) => {
     logger.error(err, 'Upload failed')
     return false
   })
@@ -100,4 +100,4 @@ async function upload(key, data) {
   return result
 }
 
-export { download, upload }
+export { s3ClientPlugin, download, upload }
