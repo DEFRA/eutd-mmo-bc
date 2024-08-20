@@ -8,6 +8,17 @@ const oneHour = 1000 * 60 * 60
 const fourHours = oneHour * 4
 const oneWeekMillis = oneHour * 24 * 7
 
+const getUsers = () => {
+  let userCredentials = ''
+  if (process.env.NODE_ENV === 'production') {
+    // @ts-expect-error will be defined
+    userCredentials = process.env.ADMIN_USER_CREDENTIALS
+  } else {
+    userCredentials = [{ username: 'admin', password: 'admin' }]
+  }
+  return userCredentials
+}
+
 export const config = convict({
   env: {
     doc: 'The application environment.',
@@ -30,7 +41,7 @@ export const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'eutd-mmo-bc'
+    default: 'Check an Export Certificate'
   },
   root: {
     doc: 'Project root',
@@ -147,7 +158,41 @@ export const config = convict({
       default: process.env.NODE_ENV !== 'production',
       env: 'USE_SINGLE_INSTANCE_CACHE'
     }
-  })
+  }),
+  users: /** @type {SchemaObj<string>} */ (getUsers()),
+  authCookiePassword: /** @type {SchemaObj<string | null>} */ ({
+    doc: 'Password for the auth cookie',
+    format: String,
+    nullable: true,
+    default: 'the-password-must-be-at-least-60-characters-long',
+    env: 'COOKIE_PASSWORD'
+  }),
+  aws: /** @type {SchemaObj<string | null>} */ ({
+    region: {
+      doc: 'AWS region',
+      format: String,
+      default: 'eu-west-2',
+      env: 'AWS_BUCKET_REGION'
+    },
+    bucketName: {
+      doc: 'AWS bucket name',
+      format: String,
+      default: 'mmo-check-exp-cert-dev',
+      env: 'AWS_BUCKET_NAME'
+    },
+    s3Endpoint: {
+      doc: 'AWS S3 endpoint',
+      format: String,
+      default: 'http://localhost:4566',
+      env: 'S3_ENDPOINT'
+    }
+  }),
+  apiAuth: {
+    doc: 'Used to authenticate API requests',
+    format: String,
+    default: '00000000-0000-1000-A000-000000000000',
+    env: 'API_AUTH_TOKEN'
+  }
 })
 
 config.validate({ allowed: 'strict' })

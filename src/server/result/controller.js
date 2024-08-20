@@ -3,18 +3,18 @@
  * Provided as an example, remove or modify as required.
  * @satisfies {Partial<ServerRoute>}
  */
-export const aboutController = {
+export const resultController = {
   handler(request, h) {
-    return h.view('about/index', {
-      pageTitle: 'About',
-      heading: 'About',
+    return h.view('result/index', {
+      pageTitle: 'GOV.UK - Check an Export Certificate',
+      heading: 'Enter Certificate Details',
       breadcrumbs: [
         {
           text: 'Home',
           href: '/'
         },
         {
-          text: 'About'
+          text: 'Validate Certificate Number'
         }
       ]
     })

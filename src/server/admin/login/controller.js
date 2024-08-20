@@ -1,20 +1,20 @@
 /**
- * A GDS styled example home page controller.
+ * A GDS styled example about page controller.
  * Provided as an example, remove or modify as required.
  * @satisfies {Partial<ServerRoute>}
  */
-export const homeController = {
+export const loginController = {
   handler(request, h) {
-    return h.view('home/index', {
+    return h.view('admin/login/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',
-      heading: 'Enter the certificate number you wish to validate',
+      heading: 'Sign in with your credentials',
       breadcrumbs: [
         {
           text: 'Home',
           href: '/'
         },
         {
-          text: 'Validate Certificate Number'
+          text: 'Enter Certificate Details'
         }
       ]
     })
