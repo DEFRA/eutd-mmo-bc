@@ -8,12 +8,11 @@ import { login } from '~/src/server/admin/login/index.js'
 import { result } from '~/src/server/result/index.js'
 import { certificates } from '~/src/server/certificates/index.js'
 import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files.js'
-import project from '~/package.json'
 
 const swaggerOptions = {
   info: {
     title: 'MMO Check an Export Certificate',
-    version: project.version
+    version: '0.0.0'
   }
 }
 
