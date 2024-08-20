@@ -24,7 +24,8 @@ export const enterIssueDateRoutes = [
       // formats the date as iso and removes the timezone from the date
       const timestamp =
         year && day && month
-          ? formatISO(new Date(year, month - 1, day)).split('+')[0] + '.000Z'
+          ? formatISO(new Date(year, month - 1, day)).split('T')[0] +
+            'T00:00:00.000Z'
           : undefined
       setYarValue(request, 'timestamp', timestamp)
       return h.redirect('/admin/enter-certificate-status')
