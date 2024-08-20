@@ -12,8 +12,43 @@ import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files
 const swaggerOptions = {
   info: {
     title: 'MMO Check an Export Certificate',
-    version: '0.0.0'
-  }
+    description:
+      'An offical Marine Management Organisation Developer API for Checking the validity of an Export Certificate',
+    version: '0.0.0',
+    contact: {
+      name: 'MMO Developer Support',
+      url: 'https://marinemanagement.org.uk/support',
+      email: 'support@marinemanagement.org.uk'
+    },
+    license: {
+      name: 'OGL v3.0',
+      url: 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/'
+    }
+  },
+  tags: [
+    {
+      name: 'Register Management',
+      description: 'APIs for managing the known Export Certificate Details'
+    }
+  ],
+  grouping: 'tags',
+  OAS: 'v3.0',
+  schemes: ['http', 'https'],
+  servers: [
+    {
+      url: 'http://localhost:3000',
+      description: 'MMO Check an Export Certificate Service'
+    }
+  ],
+  securityDefinitions: {
+    ApiKeyAuth: {
+      type: 'apiKey',
+      name: 'X-API-KEY',
+      in: 'header',
+      'x-keyPrefix': 'ApiKeyAuth '
+    }
+  },
+  security: [{ ApiKeyAuth: [] }]
 }
 
 /**
