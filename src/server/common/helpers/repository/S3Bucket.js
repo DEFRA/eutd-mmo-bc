@@ -1,7 +1,6 @@
 import {
   S3Client,
   GetObjectCommand,
-  ListBucketsCommand,
   PutObjectCommand
 } from '@aws-sdk/client-s3'
 import { config } from '~/src/config/index.js'
@@ -23,9 +22,7 @@ const s3ClientPlugin = {
         endpoint: awsConfig.s3Endpoint
       })
 
-      logger.info(
-        `setup bucket client accessKeyId: ${awsConfig.accessKeyId} region: ${awsConfig.region}`
-      )
+      logger.info(`setup bucket client region: ${awsConfig.region}`)
       server.decorate('request', 's3', s3Client)
       server.decorate('server', 's3', s3Client)
 
@@ -48,32 +45,23 @@ async function streamToString(stream) {
 
 async function download(s3Client, key) {
   const logger = createLogger()
-
   const awsConfig = config.get('aws')
 
   logger.info(`downloading ${key} from bucket ${awsConfig.bucketName}`)
 
-  let input = {}
-  const command = new ListBucketsCommand(input)
-  const response = await s3Client.send(command)
-
-  const hasBucket = response.Buckets?.some(
-    (bucket) => bucket.Name === awsConfig.bucketName
-  )
-
-  if (!hasBucket) {
-    s3Client.destroy()
-
-    return []
-  }
-
-  input = {
+  const input = {
     Bucket: awsConfig.bucketName,
     Key: key
   }
 
   const getCommand = new GetObjectCommand(input)
-  const data = await s3Client.send(getCommand)
+  let data
+  try {
+    data = await s3Client.send(getCommand)
+  } catch (err) {
+    logger.error('Failed to get file from S3', err)
+    return []
+  }
 
   logger.info('download complete')
 
