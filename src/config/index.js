@@ -12,7 +12,7 @@ const getUsers = () => {
   let userCredentials = ''
   if (process.env.NODE_ENV === 'production') {
     // @ts-expect-error will be defined
-    userCredentials = process.env.ADMIN_USER_CREDENTIALS
+    userCredentials = JSON.parse(process.env.ADMIN_USER_CREDENTIALS)
   } else {
     userCredentials = [{ username: 'admin', password: 'admin' }]
   }
