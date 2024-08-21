@@ -81,6 +81,7 @@ export const certificates = {
         method: 'DELETE',
         path: '/api/certificates/{certificateNumber}',
         options: {
+          ...removeCertificateDetails,
           auth: 'api-key-strategy',
           description: 'Remove details of an Export Certificate',
           notes: 'The Certificate Number to include',
@@ -94,11 +95,10 @@ export const certificates = {
           tags: ['api', 'Register Management'],
           validate: {
             params: Joi.object({
-              certNumber: Joi.string().required()
+              certificateNumber: Joi.string().required()
             })
           }
-        },
-        ...removeCertificateDetails
+        }
       })
     }
   }
