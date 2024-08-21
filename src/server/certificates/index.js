@@ -28,13 +28,12 @@ export const certificates = {
         options: {
           ...getCertificates,
           auth: 'api-key-strategy',
-          description:
-            'List all Export Certificates registered within the system',
+          description: 'List all Export Certificates registered within the system',
           plugins: {
             'hapi-swagger': {
-              responses: httpStatuses
-            }
-          },
+              responses: httpStatuses,
+              id: 'listCertificate'
+          }},
           tags: ['api', 'Register Management']
         }
       })
@@ -43,23 +42,29 @@ export const certificates = {
         method: 'PUT',
         path: '/api/certificates/{certificateNumber}',
         options: {
+          ...updateCertificateDetails,
           auth: 'api-key-strategy',
           description: 'Include details of an Export Certificate',
           notes: 'The Certificate Number to include',
           plugins: {
             'hapi-swagger': {
               responses: httpStatuses,
-              payloadType: 'form'
-            }
+              id: 'includeCertificateDetails',
+              produces: ['application/json']
+          }
           },
           tags: ['api', 'Register Management'],
           validate: {
             params: Joi.object({
-              certNumber: Joi.string().required()
+              certificateNumber: Joi.string().required()
+            }),
+            payload: Joi.object({
+              certNumber: Joi.string().required().description('An Export Certificate Number').example('GBR-2018-CC-123A4BC56'),
+              timestamp: Joi.string().isoDate().description('The Export Certificate issue date in ISO8601 format').example('2019-07-07T13:53:40.257Z'),
+              status: Joi.string().required().example('COMPLETE')
             })
           }
         },
-        ...updateCertificateDetails
       })
 
       server.route({
@@ -72,9 +77,9 @@ export const certificates = {
           plugins: {
             'hapi-swagger': {
               responses: httpStatuses,
-              payloadType: 'form'
-            }
-          },
+              payloadType: 'form',
+              id: 'removeCertificateDetails'
+          }},
           tags: ['api', 'Register Management'],
           validate: {
             params: Joi.object({
@@ -89,26 +94,16 @@ export const certificates = {
 }
 
 const exportCertificateDetailsModel = Joi.object({
-  certNumber: Joi.string()
-    .required()
-    .description('An Export Certificate Number')
-    .example('GBR-2018-CC-123A4BC56'),
-  timestamp: Joi.string()
-    .isoDate()
-    .description('The Export Certificate issue date in ISO8601 format')
-    .example('2019-07-07T13:53:40.257Z'),
+  certNumber: Joi.string().required().description('An Export Certificate Number').example('GBR-2018-CC-123A4BC56'),
+  timestamp: Joi.string().isoDate().description('The Export Certificate issue date in ISO8601 format').example('2019-07-07T13:53:40.257Z'),  
   status: Joi.string().required().example("enum: ['DRAFT', 'COMPLETE', 'VOID']")
-})
-  .label('ExportCertificateDetails')
-  .description('Details of an Export Certificate to store')
+}).label('ExportCertificateDetails').description('Details of an Export Certificate to store');
 
 const errorModel = Joi.object({
   code: Joi.number().required(),
   message: Joi.string().required(),
   stack: Joi.string()
-})
-  .label('Error')
-  .description('Error')
+}).label('Error').description('Error');
 
 const httpStatuses = {
   200: {
