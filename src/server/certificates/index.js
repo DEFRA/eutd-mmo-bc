@@ -32,7 +32,7 @@ export const certificates = {
             'List all Export Certificates registered within the system',
           plugins: {
             'hapi-swagger': {
-              responses: httpStatuses,
+              responses: getHttpStatuses,
               id: 'listCertificate'
             }
           },
@@ -52,14 +52,12 @@ export const certificates = {
             'hapi-swagger': {
               responses: httpStatuses,
               id: 'includeCertificateDetails',
-              produces: ['application/json']
+              produces: ['application/json'],
+              payloadType: 'form'
             }
           },
           tags: ['api', 'Register Management'],
           validate: {
-            params: Joi.object({
-              certificateNumber: Joi.string().required()
-            }),
             payload: Joi.object({
               certNumber: Joi.string()
                 .required()
@@ -67,6 +65,7 @@ export const certificates = {
                 .example('GBR-2018-CC-123A4BC56'),
               timestamp: Joi.string()
                 .isoDate()
+                .required()
                 .description(
                   'The Export Certificate issue date in ISO8601 format'
                 )
@@ -118,6 +117,10 @@ const exportCertificateDetailsModel = Joi.object({
   .label('ExportCertificateDetails')
   .description('Details of an Export Certificate to store')
 
+const successMessageModel = Joi.object({
+  message: Joi.string().required().example('SUCCESS')
+}).label('Success response')
+
 const errorModel = Joi.object({
   code: Joi.number().required(),
   message: Joi.string().required(),
@@ -126,10 +129,30 @@ const errorModel = Joi.object({
   .label('Error')
   .description('Error')
 
-const httpStatuses = {
+const getHttpStatuses = {
   200: {
     description: 'Successful',
     schema: exportCertificateDetailsModel
+  },
+  400: {
+    description: 'Invalid parameters',
+    schema: errorModel
+  },
+  401: {
+    description: ' API key is missing or invalid',
+    headers: { WWW_Authenticate: { schema: { type: 'string' } } },
+    schema: errorModel
+  },
+  500: {
+    description: 'An error occurred while performing the operation',
+    schema: errorModel
+  }
+}
+
+const httpStatuses = {
+  200: {
+    description: 'Successful',
+    schema: successMessageModel
   },
   400: {
     description: 'Invalid parameters',
