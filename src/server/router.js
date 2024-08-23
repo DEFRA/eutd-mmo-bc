@@ -27,6 +27,10 @@ const swaggerOptions = {
   },
   tags: [
     {
+      name: ' Validation',
+      description: 'APIs for validating Export Certificate Details'
+    },
+    {
       name: 'Register Management',
       description: 'APIs for managing the known Export Certificate Details'
     }

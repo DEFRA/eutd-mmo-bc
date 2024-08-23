@@ -158,6 +158,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
+      payload: {},
       url: `/api/certificates/certificateNumber`
     })
     expect(payload).toContain('Success')
@@ -208,6 +209,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
+      payload: {},
       url: `/api/certificates/certificateNumber`
     })
     expect(statusCode).toBe(500)
