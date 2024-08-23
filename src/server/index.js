@@ -1,6 +1,6 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
-
+import Boom from '@hapi/boom'
 import { config } from '~/src/config/index.js'
 import { nunjucksConfig } from '~/src/config/nunjucks/index.js'
 import { router } from './router.js'
@@ -97,9 +97,14 @@ const apiKeyScheme = () => {
       const apiKey = request.headers['x-api-key']
 
       if (!apiKey || apiKey !== config.get('apiAuth')) {
-        return h.unauthenticated(new Error('Invalid API key'), {
-          credentials: null
-        })
+        const error = Boom.unauthorized('Invalid API key')
+        error.output.payload = {
+          statusCode: 401,
+          error: 'Unauthorized',
+          message: 'Invalid API key'
+        }
+        error.output.headers['content-type'] = 'application/json' // Ensure JSON response
+        return h.unauthenticated(error)
       }
 
       const credentials = { apiKey }
