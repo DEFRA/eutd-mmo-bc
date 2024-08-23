@@ -38,12 +38,6 @@ const swaggerOptions = {
   grouping: 'tags',
   OAS: 'v3.0',
   schemes: ['http', 'https'],
-  servers: [
-    {
-      url: 'http://localhost:3000',
-      description: 'MMO Check an Export Certificate Service'
-    }
-  ],
   securityDefinitions: {
     ApiKeyAuth: {
       type: 'apiKey',
