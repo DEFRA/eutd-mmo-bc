@@ -95,6 +95,68 @@ describe('#certificatesController', () => {
   })
 })
 
+describe(`API call for '/certificates/{certificateNumber} swagger endpoint`, () => {
+  /** @type {Server} */
+  let server
+  let mockGetCertificate
+  const result = {
+    certNumber: 'GBR-2024-CC-123A4BC56',
+    timestamp: '12 MAY 2024',
+    status: 'COMPLETE',
+    isValid: true
+  }
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  beforeEach(() => {
+    mockGetCertificate = jest.spyOn(Certificates, 'getCertificateDetails')
+    mockGetCertificate.mockResolvedValue(result)
+  })
+
+  afterEach(async () => {
+    await server.stop()
+    mockGetCertificate.mockRestore()
+  })
+
+  test('Should validate with certificate number GBR-2018-CC-123A4BC56', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/certificates/GBR-2018-CC-123A4BC56'
+    })
+
+    expect(payload).toContain('The certificate number entered is not valid')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should validate a given certificate', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/certificates/GBR-2024-CC-123A4BC56'
+    })
+
+    expect(mockGetCertificate.mock.calls[0][1]).toBe('GBR-2024-CC-123A4BC56')
+    expect(JSON.parse(payload)).toEqual(result)
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should return a 500 error', async () => {
+    const error = new Error('Something has gone wrong')
+    mockGetCertificate.mockImplementation(() => {
+      throw error
+    })
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      url: '/certificates/GBR-2024-CC-123A4BC56'
+    })
+
+    expect(mockGetCertificate.mock.calls[0][1]).toBe('GBR-2024-CC-123A4BC56')
+    expect(statusCode).toBe(500)
+  })
+})
+
 describe('API calls for GET/PUT/DELETE', () => {
   /** @type {Server} */
   let server
@@ -158,6 +220,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
+      payload: {},
       url: `/api/certificates/certificateNumber`
     })
     expect(payload).toContain('Success')
@@ -208,6 +271,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
+      payload: {},
       url: `/api/certificates/certificateNumber`
     })
     expect(statusCode).toBe(500)

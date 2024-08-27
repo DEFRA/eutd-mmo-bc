@@ -32,13 +32,25 @@ export function catchAll(request, h) {
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode)
 
-  return h
-    .view('error/index', {
-      pageTitle: errorMessage,
-      heading: statusCode,
-      message: errorMessage
-    })
-    .code(statusCode)
+  if (request.path?.startsWith('/api')) {
+    // Return JSON response for API calls
+    return h
+      .response({
+        statusCode: response.output.statusCode,
+        error: response.output.payload.error,
+        message: response.message
+      })
+      .code(response.output.statusCode)
+      .type('application/json')
+  } else {
+    return h
+      .view('error/index', {
+        pageTitle: errorMessage,
+        heading: statusCode,
+        message: errorMessage
+      })
+      .code(statusCode)
+  }
 }
 
 /**

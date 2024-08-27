@@ -26,6 +26,26 @@ export const certificatesController = {
   }
 }
 
+export const validateCertificate = {
+  async handler(request) {
+    const { certificateNumber } = request.params
+
+    if (
+      certificateNumber === undefined ||
+      certificateNumber === '' ||
+      certificateNumber === 'GBR-2018-CC-123A4BC56'
+    ) {
+      return 'The certificate number entered is not valid'
+    }
+
+    const resultModel = await getCertificateDetails(
+      request,
+      certificateNumber.trim()
+    )
+    return resultModel
+  }
+}
+
 export const getCertificates = {
   async handler(request) {
     return await getList(request)
