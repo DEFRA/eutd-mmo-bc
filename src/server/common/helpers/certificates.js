@@ -61,7 +61,7 @@ export const removeDocument = async (request, certificateNumber) => {
   const list = await getList(request)
 
   if (!certificateNumber) {
-    logger.error('"certNumber" is required for upload')
+    logger.error('"certNumber" is required for removal')
     return false
   }
 
