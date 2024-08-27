@@ -95,8 +95,8 @@ export const certificates = {
                   'The Export Certificate issue date in ISO8601 format'
                 )
                 .example('2019-07-07T13:53:40.257Z'),
-              status: Joi.string().example('COMPLETE')
-            })
+              status: Joi.string().example('DRAFT')
+            }).label('Paylod')
           }
         }
       })
@@ -159,7 +159,7 @@ const validResponseModel = Joi.object({
     .required()
     .example("enum: ['DRAFT', 'COMPLETE', 'VOID']"),
   isValid: Joi.boolean().required().example('true')
-}).label('Validation response')
+}).label('ExportCertificateValidity')
 
 const errorModel = Joi.object({
   code: Joi.number().required(),
