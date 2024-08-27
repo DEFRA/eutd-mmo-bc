@@ -32,7 +32,7 @@ export function catchAll(request, h) {
   const statusCode = response.output.statusCode
   const errorMessage = statusCodeMessage(statusCode)
 
-  if (request.path.startsWith('/api')) {
+  if (request.path?.startsWith('/api')) {
     // Return JSON response for API calls
     return h
       .response({
