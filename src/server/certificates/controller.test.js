@@ -288,6 +288,16 @@ describe('API calls for GET/PUT/DELETE', () => {
     })
     expect(statusCode).toBe(500)
   })
+
+  test('Should throw error if there is no api key', async () => {
+    mockPutCertificate.mockResolvedValue(true)
+    const { statusCode } = await server.inject({
+      method: 'PUT',
+      headers: {},
+      url: `/api/certificates/certificateNumber`
+    })
+    expect(statusCode).toBe(401)
+  })
 })
 
 /**
