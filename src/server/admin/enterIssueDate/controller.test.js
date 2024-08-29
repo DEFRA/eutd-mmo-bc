@@ -107,7 +107,49 @@ describe('#enterIssueDateController', () => {
     })
 
     expect(yarHelpers.setYarValue.mock.calls[0][2]).toBeUndefined()
-    expect(statusCode).toBe(302)
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should throw an error is date is in the future', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'POST',
+      url: '/admin/enter-issue-date',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        'timestamp-day': '20',
+        'timestamp-month': '05',
+        'timestamp-year': '4023'
+      }
+    })
+    expect(payload).toContain('The issue date must be in the past')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should throw an error is date is invalid', async () => {
+    const { statusCode, payload } = await server.inject({
+      method: 'POST',
+      url: '/admin/enter-issue-date',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        'timestamp-day': '31',
+        'timestamp-month': '04',
+        'timestamp-year': '2001'
+      }
+    })
+    expect(payload).toContain('The issue date must be valid')
+    expect(statusCode).toBe(200)
   })
 })
 
