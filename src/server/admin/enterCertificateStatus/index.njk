@@ -6,10 +6,6 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ appHeading({
-        text: heading
-      }) }}
-
       <form action="/admin/enter-certificate-status" method="post" novalidate>
         {{ govukRadios({
           fieldset: {
