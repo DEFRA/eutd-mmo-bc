@@ -251,7 +251,12 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
-      url: `/api/certificates/certificateNumber`
+      url: `/api/certificates/certificateNumber`,
+      payload: {
+        certNumber: 'GBR-2024-CC-123A4AW03',
+        status: 'DRAFT',
+        timestamp: '2024-07-06T00:00:00.000Z'
+      }
     })
     expect(statusCode).toBe(400)
   })
