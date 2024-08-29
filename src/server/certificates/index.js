@@ -7,6 +7,16 @@ import {
   validateCertificate
 } from '~/src/server/certificates/controller.js'
 
+const apiKeyAuthStrategy = 'api-key-strategy'
+const apiTags = ['api', 'Register Management']
+const certNumberJoi = Joi.string()
+  .required()
+  .description('An Export Certificate Number')
+  .example('GBR-2018-CC-123A4BC56')
+const timestampJoi = Joi.string()
+  .isoDate()
+  .description('The Export Certificate issue date in ISO8601 format')
+  .example('2019-07-07T13:53:40.257Z')
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
  */
@@ -53,7 +63,7 @@ export const certificates = {
         path: '/api/certificates',
         options: {
           ...getCertificates,
-          auth: 'api-key-strategy',
+          auth: apiKeyAuthStrategy,
           description:
             'List all Export Certificates registered within the system',
           plugins: {
@@ -62,7 +72,7 @@ export const certificates = {
               id: 'listCertificate'
             }
           },
-          tags: ['api', 'Register Management']
+          tags: apiTags
         }
       })
 
@@ -71,7 +81,7 @@ export const certificates = {
         path: '/api/certificates/{certificateNumber}',
         options: {
           ...updateCertificateDetails,
-          auth: 'api-key-strategy',
+          auth: apiKeyAuthStrategy,
           description: 'Include details of an Export Certificate',
           notes: 'The Certificate Number to include',
           plugins: {
@@ -80,21 +90,14 @@ export const certificates = {
               id: 'includeCertificateDetails'
             }
           },
-          tags: ['api', 'Register Management'],
+          tags: apiTags,
           validate: {
             params: Joi.object({
               certificateNumber: Joi.string().required()
             }),
             payload: Joi.object({
-              certNumber: Joi.string()
-                .description('An Export Certificate Number')
-                .example('GBR-2018-CC-123A4BC56'),
-              timestamp: Joi.string()
-                .isoDate()
-                .description(
-                  'The Export Certificate issue date in ISO8601 format'
-                )
-                .example('2019-07-07T13:53:40.257Z'),
+              certNumber: certNumberJoi,
+              timestamp: timestampJoi,
               status: Joi.string().example('DRAFT')
             }).label('Paylod')
           }
@@ -106,7 +109,7 @@ export const certificates = {
         path: '/api/certificates/{certificateNumber}',
         options: {
           ...removeCertificateDetails,
-          auth: 'api-key-strategy',
+          auth: apiKeyAuthStrategy,
           description: 'Remove details of an Export Certificate',
           notes: 'The Certificate Number to include',
           plugins: {
@@ -116,7 +119,7 @@ export const certificates = {
               id: 'removeCertificateDetails'
             }
           },
-          tags: ['api', 'Register Management'],
+          tags: apiTags,
           validate: {
             params: Joi.object({
               certificateNumber: Joi.string().required()
@@ -129,14 +132,8 @@ export const certificates = {
 }
 
 const exportCertificateDetailsModel = Joi.object({
-  certNumber: Joi.string()
-    .required()
-    .description('An Export Certificate Number')
-    .example('GBR-2018-CC-123A4BC56'),
-  timestamp: Joi.string()
-    .isoDate()
-    .description('The Export Certificate issue date in ISO8601 format')
-    .example('2019-07-07T13:53:40.257Z'),
+  certNumber: certNumberJoi,
+  timestamp: timestampJoi,
   status: Joi.string().required().example("enum: ['DRAFT', 'COMPLETE', 'VOID']")
 })
   .label('ExportCertificateDetails')
@@ -147,14 +144,8 @@ const successMessageModel = Joi.object({
 }).label('Success response')
 
 const validResponseModel = Joi.object({
-  certNumber: Joi.string()
-    .required()
-    .description('An Export Certificate Number')
-    .example('GBR-2018-CC-123A4BC56'),
-  timestamp: Joi.string()
-    .isoDate()
-    .description('The Export Certificate issue date in ISO8601 format')
-    .example('2019-07-07T13:53:40.257Z'),
+  certNumber: certNumberJoi,
+  timestamp: timestampJoi,
   status: Joi.string()
     .required()
     .example("enum: ['DRAFT', 'COMPLETE', 'VOID']"),
@@ -169,24 +160,30 @@ const errorModel = Joi.object({
   .label('Error')
   .description('Error')
 
+const invalidParamsError = {
+  description: 'Invalid parameters',
+  schema: errorModel
+}
+
+const apiKeyError = {
+  description: ' API key is missing or invalid',
+  headers: { WWW_Authenticate: { schema: { type: 'string' } } },
+  schema: errorModel
+}
+
+const serverError = {
+  description: 'An error occurred while performing the operation',
+  schema: errorModel
+}
+
 const getHttpStatuses = {
   200: {
     description: 'Successful',
     schema: exportCertificateDetailsModel
   },
-  400: {
-    description: 'Invalid parameters',
-    schema: errorModel
-  },
-  401: {
-    description: ' API key is missing or invalid',
-    headers: { WWW_Authenticate: { schema: { type: 'string' } } },
-    schema: errorModel
-  },
-  500: {
-    description: 'An error occurred while performing the operation',
-    schema: errorModel
-  }
+  400: invalidParamsError,
+  401: apiKeyError,
+  500: serverError
 }
 
 const httpStatuses = {
@@ -194,19 +191,9 @@ const httpStatuses = {
     description: 'Successful',
     schema: successMessageModel
   },
-  400: {
-    description: 'Invalid parameters',
-    schema: errorModel
-  },
-  401: {
-    description: ' API key is missing or invalid',
-    headers: { WWW_Authenticate: { schema: { type: 'string' } } },
-    schema: errorModel
-  },
-  500: {
-    description: 'An error occurred while performing the operation',
-    schema: errorModel
-  }
+  400: invalidParamsError,
+  401: apiKeyError,
+  500: serverError
 }
 
 const validHttpStatuses = {
@@ -214,19 +201,9 @@ const validHttpStatuses = {
     description: 'Successful',
     schema: validResponseModel
   },
-  400: {
-    description: 'Invalid parameters',
-    schema: errorModel
-  },
-  401: {
-    description: ' API key is missing or invalid',
-    headers: { WWW_Authenticate: { schema: { type: 'string' } } },
-    schema: errorModel
-  },
-  500: {
-    description: 'An error occurred while performing the operation',
-    schema: errorModel
-  }
+  400: invalidParamsError,
+  401: apiKeyError,
+  500: serverError
 }
 
 /**

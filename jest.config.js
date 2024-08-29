@@ -15,7 +15,8 @@ export default {
     '<rootDir>/.server',
     '<rootDir>/.public',
     '<rootDir>/src/__fixtures__',
-    '<rootDir>/src/server/common/test-helpers'
+    '<rootDir>/src/server/common/test-helpers',
+    '<rootDir>/src/client'
   ],
   coverageDirectory: '<rootDir>/coverage'
 }

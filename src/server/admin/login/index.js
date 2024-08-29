@@ -5,6 +5,7 @@ import { config } from '~/src/config/index.js'
  * These routes are registered in src/server/router.js.
  * @satisfies {ServerRegisterPluginObject<void>}
  */
+const path = '/admin/login'
 export const login = {
   plugin: {
     name: 'login',
@@ -12,7 +13,7 @@ export const login = {
       server.route([
         {
           method: 'GET',
-          path: '/admin/login',
+          path,
           options: {
             auth: false
           },
@@ -20,7 +21,7 @@ export const login = {
         },
         {
           method: 'POST',
-          path: '/admin/login',
+          path,
           options: {
             auth: false
           },
@@ -44,7 +45,7 @@ export const login = {
               request.cookieAuth.set({ authenticated: true })
               return h.redirect('/admin')
             } else {
-              return h.redirect('/admin/login').takeover()
+              return h.redirect(path).takeover()
             }
           }
         }
