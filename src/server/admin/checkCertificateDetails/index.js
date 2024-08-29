@@ -5,15 +5,16 @@ import { uploadCertificateDetails } from '~/src/server/common/helpers/certificat
  * These routes are registered in src/server/router.js.
  * @satisfies {ServerRegisterPluginObject<void>}
  */
+const path = '/admin/check-certificate-details'
 export const checkCertificateDetailsRoutes = [
   {
     method: 'GET',
-    path: '/admin/check-certificate-details',
+    path,
     ...checkCertificateDetailsController
   },
   {
     method: 'POST',
-    path: '/admin/check-certificate-details',
+    path,
     handler: async (request, h) => {
       const newCert = {
         certNumber: request.payload.certNumber,
@@ -22,7 +23,7 @@ export const checkCertificateDetailsRoutes = [
       }
       const result = await uploadCertificateDetails(request, newCert)
       if (!result) {
-        return h.redirect('/admin/check-certificate-details').takeover()
+        return h.redirect(path).takeover()
       } else {
         return h.redirect('/admin/confirmation')
       }

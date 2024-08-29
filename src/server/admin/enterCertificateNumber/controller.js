@@ -9,7 +9,6 @@ export const enterCertificateNumberController = {
   handler(request, h) {
     return h.view('admin/enterCertificateNumber/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',
-      heading: 'Enter the certificate number',
       breadcrumbs: [
         {
           text: 'Home',
