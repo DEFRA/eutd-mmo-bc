@@ -30,6 +30,9 @@ export const getCheckCertificateDetailsModel = (request, error) => {
       break
     case CERTIFICATE_TO_VOID_NOT_COMPLETE:
       errorMessage = 'Only completed certificates can be voided'
+      break
+    default:
+      break
   }
   return {
     pageTitle: 'GOV.UK - Check an Export Certificate',

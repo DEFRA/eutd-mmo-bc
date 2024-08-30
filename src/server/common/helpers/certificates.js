@@ -53,7 +53,7 @@ export const uploadCertificateDetails = async (request, newCertificate) => {
   }
 
   let newCertificateList = []
-  const regex = /GBR-[\d]{4}-(CM|PM|SM)/g
+  const regex = /GBR-\d{4}-(CM|PM|SM)/g
   const matches = regex.exec(newCertificate.certNumber)
   if (matches && matches.length > 0) {
     if (newCertificate.status === 'VOID') {
