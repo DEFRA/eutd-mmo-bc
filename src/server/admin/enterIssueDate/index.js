@@ -39,6 +39,7 @@ export const enterIssueDateRoutes = [
       })
       const issueDateIsValid = isValid(parsedDate)
       if (issueDateInFuture || !issueDateIsValid) {
+        const badRequestStatusCode = 400
         return h
           .view('admin/enterIssueDate/index', {
             pageTitle: 'Error: GOV.UK - Check an Export Certificate',
@@ -61,7 +62,7 @@ export const enterIssueDateRoutes = [
               ? 'Incorrect date. Enter a valid date to proceed'
               : 'Date cannot be blank. Enter a valid date to proceed'
           })
-          .code(400)
+          .code(badRequestStatusCode)
       }
       return h.redirect('/admin/enter-certificate-status')
     }
