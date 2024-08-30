@@ -20,13 +20,16 @@ export const checkCertificateDetailsController = {
 
 export const getCheckCertificateDetailsModel = (request, error) => {
   let errorMessage = ''
-  if (error === CERTIFICATE_TO_VOID_NOT_FOUND) {
-    errorMessage = 'The certificate you are trying to void does not exist'
-  } else if (error === CERTIFICATE_NOT_FROM_ADMIN_APP) {
-    errorMessage =
-      'The certificate you are trying to void was not created from the internal admin app'
-  } else if (error === CERTIFICATE_TO_VOID_NOT_COMPLETE) {
-    errorMessage = 'Only completed certificates can be voided'
+  switch (error) {
+    case CERTIFICATE_TO_VOID_NOT_FOUND:
+      errorMessage = 'The certificate you are trying to void does not exist'
+      break
+    case CERTIFICATE_NOT_FROM_ADMIN_APP:
+      errorMessage =
+        'The certificate you are trying to void was not created from the internal admin app'
+      break
+    case CERTIFICATE_TO_VOID_NOT_COMPLETE:
+      errorMessage = 'Only completed certificates can be voided'
   }
   return {
     pageTitle: 'GOV.UK - Check an Export Certificate',

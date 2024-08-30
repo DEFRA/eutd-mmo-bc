@@ -26,12 +26,13 @@ export const checkCertificateDetailsRoutes = [
       }
       const result = await uploadCertificateDetails(request, newCert)
       if (result.error) {
+        const errorCode = 400
         return h
           .view(
             'admin/checkCertificateDetails/index',
             getCheckCertificateDetailsModel(request, result.error)
           )
-          .code(400)
+          .code(errorCode)
       } else {
         return h.redirect('/admin/confirmation')
       }

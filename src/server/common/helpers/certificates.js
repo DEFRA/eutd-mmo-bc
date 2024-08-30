@@ -53,7 +53,7 @@ export const uploadCertificateDetails = async (request, newCertificate) => {
   }
 
   let newCertificateList = []
-  const regex = /GBR-[0-9]{4}-(CM|PM|SM)/g
+  const regex = /GBR-[\d]{4}-(CM|PM|SM)/g
   const matches = regex.exec(newCertificate.certNumber)
   if (matches && matches.length > 0) {
     if (newCertificate.status === 'VOID') {
@@ -64,7 +64,8 @@ export const uploadCertificateDetails = async (request, newCertificate) => {
         return {
           error: CERTIFICATE_TO_VOID_NOT_FOUND
         }
-      } else if (existingCertificate.status !== 'COMPLETE') {
+      }
+      if (existingCertificate.status !== 'COMPLETE') {
         return {
           error: CERTIFICATE_TO_VOID_NOT_COMPLETE
         }
