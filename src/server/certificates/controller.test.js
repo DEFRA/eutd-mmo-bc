@@ -222,7 +222,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       },
       payload: {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
       url: `/api/certificates/certificateNumber`
@@ -254,7 +254,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       url: `/api/certificates/certificateNumber`,
       payload: {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       }
     })
@@ -282,7 +282,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       },
       payload: {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
       url: `/api/certificates/certificateNumber`
