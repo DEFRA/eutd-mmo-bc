@@ -1,6 +1,7 @@
 import { createServer } from '~/src/server/index.js'
 import * as Certificates from '~/src/server/common/helpers/certificates.js'
 import { config } from '~/src/config/index.js'
+import { CERTIFICATE_NOT_FROM_ADMIN_APP } from '~/src/server/common/helpers/error-constants.js'
 
 describe('#certificatesController', () => {
   /** @type {Server} */
@@ -245,7 +246,9 @@ describe('API calls for GET/PUT/DELETE', () => {
   })
 
   test('Should throw error when updating the certificate', async () => {
-    mockPutCertificate.mockResolvedValue(false)
+    mockPutCertificate.mockResolvedValue({
+      error: CERTIFICATE_NOT_FROM_ADMIN_APP
+    })
     const { statusCode } = await server.inject({
       method: 'PUT',
       headers: {

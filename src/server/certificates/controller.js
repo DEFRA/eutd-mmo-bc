@@ -56,10 +56,10 @@ export const updateCertificateDetails = {
   async handler(request, h) {
     const payload = request.payload
     const result = await uploadCertificateDetails(request, payload)
-    if (!result) {
+    if (result.error) {
       return h
         .response(
-          `Error updating certificate ${request.params.certificateNumber}`
+          `Error updating certificate ${request.params.certificateNumber} ${result.error}`
         )
         .code(400)
     } else {
