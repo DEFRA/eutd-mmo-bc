@@ -107,7 +107,7 @@ describe('#enterIssueDateController', () => {
     })
 
     expect(yarHelpers.setYarValue.mock.calls[0][2]).toBeUndefined()
-    expect(statusCode).toBe(200)
+    expect(statusCode).toBe(400)
   })
 
   test('Should throw an error is date is in the future', async () => {
@@ -127,8 +127,8 @@ describe('#enterIssueDateController', () => {
         'timestamp-year': '4023'
       }
     })
-    expect(payload).toContain('The issue date must be in the past')
-    expect(statusCode).toBe(200)
+    expect(payload).toContain('Incorrect date. Enter a valid date to proceed')
+    expect(statusCode).toBe(400)
   })
 
   test('Should throw an error is date is invalid', async () => {
@@ -148,8 +148,10 @@ describe('#enterIssueDateController', () => {
         'timestamp-year': '2001'
       }
     })
-    expect(payload).toContain('The issue date must be valid')
-    expect(statusCode).toBe(200)
+    expect(payload).toContain(
+      'Date cannot be blank. Enter a valid date to proceed'
+    )
+    expect(statusCode).toBe(400)
   })
 })
 

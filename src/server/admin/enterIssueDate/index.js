@@ -39,27 +39,29 @@ export const enterIssueDateRoutes = [
       })
       const issueDateIsValid = isValid(parsedDate)
       if (issueDateInFuture || !issueDateIsValid) {
-        return h.view('admin/enterIssueDate/index', {
-          pageTitle: 'Error: GOV.UK - Check an Export Certificate',
-          breadcrumbs: [
-            {
-              text: 'Home',
-              href: '/admin'
-            },
-            {
-              text: 'Enter Certificate Details'
-            }
-          ],
-          certNumber: getYarValue(request, 'certNumber'),
-          timestamp,
-          timestampDay: day,
-          timestampMonth: month,
-          timestampYear: year,
-          status: getYarValue(request, 'status'),
-          errorMessage: issueDateInFuture
-            ? 'The issue date must be in the past'
-            : 'The issue date must be valid'
-        })
+        return h
+          .view('admin/enterIssueDate/index', {
+            pageTitle: 'Error: GOV.UK - Check an Export Certificate',
+            breadcrumbs: [
+              {
+                text: 'Home',
+                href: '/admin'
+              },
+              {
+                text: 'Enter Certificate Details'
+              }
+            ],
+            certNumber: getYarValue(request, 'certNumber'),
+            timestamp,
+            timestampDay: day,
+            timestampMonth: month,
+            timestampYear: year,
+            status: getYarValue(request, 'status'),
+            errorMessage: issueDateInFuture
+              ? 'Incorrect date. Enter a valid date to proceed'
+              : 'Date cannot be blank. Enter a valid date to proceed'
+          })
+          .code(400)
       }
       return h.redirect('/admin/enter-certificate-status')
     }
