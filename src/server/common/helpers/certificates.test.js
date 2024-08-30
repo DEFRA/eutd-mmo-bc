@@ -15,13 +15,13 @@ describe('#certificates - download', () => {
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW03',
-      status: 'DRAFT',
+      status: 'COMPLETE',
       timestamp: '2024-07-06T00:00:00.000Z'
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '2024-05-06T00:00:00.000Z',
-      status: 'DRAFT'
+      status: 'VOID'
     }
   ]
 
@@ -52,7 +52,7 @@ describe('#certificates - download', () => {
     expect(response).toStrictEqual({
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '06 May 2024',
-      status: 'DRAFT',
+      status: 'VOID',
       isValid: false
     })
   })
@@ -69,12 +69,12 @@ describe('#certificates - download', () => {
       },
       {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
       {
         certNumber: 'GBR-2024-CC-123A4AW02',
-        status: 'DRAFT'
+        status: 'VOID'
       }
     ]
     jest.spyOn(S3Helpers, 'download').mockResolvedValue(certifiateJson)
@@ -86,7 +86,7 @@ describe('#certificates - download', () => {
     expect(response).toStrictEqual({
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: undefined,
-      status: 'DRAFT',
+      status: 'VOID',
       isValid: false
     })
   })
@@ -103,7 +103,7 @@ describe('#certificates - download', () => {
       },
       {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
       {
@@ -169,7 +169,7 @@ describe('#certificates - upload', () => {
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW03',
-      status: 'DRAFT',
+      status: 'COMPLETE',
       timestamp: '2024-07-06T00:00:00.000Z'
     }
   ]
@@ -178,7 +178,7 @@ describe('#certificates - upload', () => {
     {
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '2024-05-06T00:00:00.000Z',
-      status: 'DRAFT'
+      status: 'COMPLETE'
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW06',
@@ -187,7 +187,7 @@ describe('#certificates - upload', () => {
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW03',
-      status: 'DRAFT',
+      status: 'COMPLETE',
       timestamp: '2024-07-06T00:00:00.000Z'
     }
   ]
@@ -195,7 +195,7 @@ describe('#certificates - upload', () => {
   const newCertificate = {
     certNumber: 'GBR-2024-CC-123A4AW02',
     timestamp: '2024-05-06T00:00:00.000Z',
-    status: 'DRAFT'
+    status: 'COMPLETE'
   }
 
   afterAll(() => {
@@ -271,13 +271,13 @@ describe('#certificates - remove', () => {
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW03',
-      status: 'DRAFT',
+      status: 'COMPLETE',
       timestamp: '2024-07-06T00:00:00.000Z'
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '2024-05-06T00:00:00.000Z',
-      status: 'DRAFT'
+      status: 'COMPLETE'
     }
   ]
 
@@ -290,7 +290,7 @@ describe('#certificates - remove', () => {
     {
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '2024-05-06T00:00:00.000Z',
-      status: 'DRAFT'
+      status: 'COMPLETE'
     }
   ]
 

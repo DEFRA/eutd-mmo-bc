@@ -98,7 +98,7 @@ export const certificates = {
             payload: Joi.object({
               certNumber: certNumberJoi,
               timestamp: timestampJoi,
-              status: Joi.string().example('DRAFT')
+              status: Joi.string().example('COMPLETE')
             }).label('Paylod')
           }
         }
@@ -134,7 +134,7 @@ export const certificates = {
 const exportCertificateDetailsModel = Joi.object({
   certNumber: certNumberJoi,
   timestamp: timestampJoi,
-  status: Joi.string().required().example("enum: ['DRAFT', 'COMPLETE', 'VOID']")
+  status: Joi.string().required().example("enum: ['COMPLETE', 'VOID']")
 })
   .label('ExportCertificateDetails')
   .description('Details of an Export Certificate to store')
@@ -146,9 +146,7 @@ const successMessageModel = Joi.object({
 const validResponseModel = Joi.object({
   certNumber: certNumberJoi,
   timestamp: timestampJoi,
-  status: Joi.string()
-    .required()
-    .example("enum: ['DRAFT', 'COMPLETE', 'VOID']"),
+  status: Joi.string().required().example("enum: ['COMPLETE', 'VOID']"),
   isValid: Joi.boolean().required().example('true')
 }).label('ExportCertificateValidity')
 

@@ -13,13 +13,13 @@ describe('#S3Bucket', () => {
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW03',
-      status: 'DRAFT',
+      status: 'COMPLETE',
       timestamp: '2024-07-06T00:00:00.000Z'
     },
     {
       certNumber: 'GBR-2024-CC-123A4AW02',
       timestamp: '2024-05-06T00:00:00.000Z',
-      status: 'DRAFT'
+      status: 'COMPLETE'
     }
   ]
 
@@ -27,7 +27,7 @@ describe('#S3Bucket', () => {
     const Readable = Stream.Readable
     const stream = new Readable()
     stream.push(
-      '[{"certNumber":"GBR-2024-CC-123A4AW06","timestamp":"2024-05-06T00:00:00.000Z","status":"COMPLETE"},{"certNumber":"GBR-2024-CC-123A4AW03","timestamp":"2024-07-06T00:00:00.000Z","status":"DRAFT"}]'
+      '[{"certNumber":"GBR-2024-CC-123A4AW06","timestamp":"2024-05-06T00:00:00.000Z","status":"COMPLETE"},{"certNumber":"GBR-2024-CC-123A4AW03","timestamp":"2024-07-06T00:00:00.000Z","status":"COMPLETE"}]'
     )
     stream.push(null)
 
@@ -49,7 +49,7 @@ describe('#S3Bucket', () => {
       },
       {
         certNumber: 'GBR-2024-CC-123A4AW03',
-        status: 'DRAFT',
+        status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       }
     ])
