@@ -1,4 +1,7 @@
-import { checkCertificateDetailsController } from '~/src/server/admin/checkCertificateDetails/controller.js'
+import {
+  checkCertificateDetailsController,
+  getCheckCertificateDetailsModel
+} from '~/src/server/admin/checkCertificateDetails/controller.js'
 import { uploadCertificateDetails } from '~/src/server/common/helpers/certificates.js'
 /**
  * Sets up the routes used in the /admin/check-certificate-details page.
@@ -22,8 +25,14 @@ export const checkCertificateDetailsRoutes = [
         status: request.payload.status
       }
       const result = await uploadCertificateDetails(request, newCert)
-      if (!result) {
-        return h.redirect(path).takeover()
+      if (result.error) {
+        const errorCode = 400
+        return h
+          .view(
+            'admin/checkCertificateDetails/index',
+            getCheckCertificateDetailsModel(request, result.error)
+          )
+          .code(errorCode)
       } else {
         return h.redirect('/admin/confirmation')
       }
