@@ -1,5 +1,6 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends 'layouts/page.njk' %}
 
@@ -10,7 +11,18 @@
         text: heading
       }) }}
 
-      <form method="post" action="login">
+    {% if error %}
+       {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [
+            {
+              text: "Invalid Username/Password",
+              href: "#username"
+            }
+          ]
+        }) }}
+    {% endif %}
+      <form method="post" action="login" id="login">
         {{ govukInput({
           label: {
             text: "Username"

@@ -44,7 +44,7 @@ export const login = {
               request.cookieAuth.set({ authenticated: true })
               return h.redirect('/admin')
             } else {
-              return h.redirect('/admin/login').takeover()
+              return h.redirect('/admin/login?error=true').takeover()
             }
           }
         }
