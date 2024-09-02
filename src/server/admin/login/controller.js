@@ -16,7 +16,8 @@ export const loginController = {
         {
           text: 'Enter Certificate Details'
         }
-      ]
+      ],
+      error: request.query.error || false
     })
   }
 }
