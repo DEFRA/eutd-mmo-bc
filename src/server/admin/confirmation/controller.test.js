@@ -37,7 +37,7 @@ describe('#confirmationController', () => {
     expect(clearSpy.mock.calls[0][1]).toBe('certNumber')
     expect(clearSpy.mock.calls[1][1]).toBe('timestamp')
     expect(clearSpy.mock.calls[2][1]).toBe('status')
-    expect(payload).toContain('Certificate Details added')
+    expect(payload).toContain('Certificate Details added - Completed')
     expect(payload).toContain(
       'Your certificate number is<br><strong>GBR-2018-CC-123A4AW15</strong>'
     )
