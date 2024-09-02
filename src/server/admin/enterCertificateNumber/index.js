@@ -23,9 +23,9 @@ export const enterCertificateNumberRoutes = [
       const list = await getList(request)
       if (
         request.payload.certNumber === '' ||
-        list.findIndex(
+        list.find(
           (listItem) => listItem.certNumber === request.payload.certNumber
-        ) !== -1
+        )
       ) {
         const badRequestStatusCode = 400
         return h
