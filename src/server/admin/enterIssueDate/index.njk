@@ -1,50 +1,99 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
+  {% if errorMessage %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: [
+        {
+          text: errorMessage,
+          href: "#timestamp-day"
+        }
+      ]
+    }) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ appHeading({
-        text: heading
-      }) }}
-
       <form action="/admin/enter-issue-date" method="post" novalidate>
-        {{ govukDateInput({
-          fieldset: {
-            legend: {
-              text: "What is the Issue Date?",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--xl"
-            }
-          },
-          hint: {
-            text: "For example, 31 10 2019"
-          },
-          id: "timestamp",
-          namePrefix: "timestamp",
-          items: [
-            {
-              name: "day",
-              classes: "govuk-input--width-2",
-              autocomplete: "timestamp-day",
-              value: timestampDay
+        {% if errorMessage %}
+          {{ govukDateInput({
+            fieldset: {
+              legend: {
+                text: "What is the Issue Date?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--xl"
+              }
             },
-            {
-              name: "month",
-              classes: "govuk-input--width-2",
-              autocomplete: "timestamp-month",
-              value: timestampMonth
+            hint: {
+              text: "For example, 31 10 2019"
             },
-            {
-              name: "year",
-              classes: "govuk-input--width-4",
-              autocomplete: "timestamp-year",
-              value: timestampYear
-            }
-          ]
-        }) }}
+            errorMessage: {
+              text: errorMessage
+            },
+            id: "timestamp",
+            namePrefix: "timestamp",
+            items: [
+              {
+                name: "day",
+                classes: "govuk-input--width-2 govuk-input--error",
+                autocomplete: "timestamp-day",
+                value: timestampDay
+              },
+              {
+                name: "month",
+                classes: "govuk-input--width-2 govuk-input--error",
+                autocomplete: "timestamp-month",
+                value: timestampMonth
+              },
+              {
+                name: "year",
+                classes: "govuk-input--width-4 govuk-input--error",
+                autocomplete: "timestamp-year",
+                value: timestampYear
+              }
+            ]
+          }) }}
+        {% else %}
+          {{ govukDateInput({
+            fieldset: {
+              legend: {
+                text: "What is the Issue Date?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--xl"
+              }
+            },
+            hint: {
+              text: "For example, 31 10 2019"
+            },
+            id: "timestamp",
+            namePrefix: "timestamp",
+            items: [
+              {
+                name: "day",
+                classes: "govuk-input--width-2",
+                autocomplete: "timestamp-day",
+                value: timestampDay
+              },
+              {
+                name: "month",
+                classes: "govuk-input--width-2",
+                autocomplete: "timestamp-month",
+                value: timestampMonth
+              },
+              {
+                name: "year",
+                classes: "govuk-input--width-4",
+                autocomplete: "timestamp-year",
+                value: timestampYear
+              }
+            ]
+          }) }}
+        {% endif %}
 
         <input type="hidden" name="certNumber" value="{{ certNumber }}">
         <input type="hidden" name="status" value="{{ status }}">

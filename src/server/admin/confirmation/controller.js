@@ -31,7 +31,10 @@ export const confirmationController = {
       ],
       certNumber,
       timestamp,
-      status
+      panelTitle:
+        status === 'VOID'
+          ? 'Certificate Details added - Voided'
+          : 'Certificate Details added'
     })
   }
 }

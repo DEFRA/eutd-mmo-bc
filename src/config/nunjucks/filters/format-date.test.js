@@ -17,6 +17,10 @@ describe('#formatDate', () => {
         'Mon 17th January 2022'
       )
     })
+
+    test('Date should be in expected format non-iso', () => {
+      expect(formatDate(new Date('2022-01-17'))).toBe('Mon 17th January 2022')
+    })
   })
 
   describe('With format attribute', () => {

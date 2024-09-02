@@ -4,6 +4,12 @@ import {
   upload
 } from '~/src/server/common/helpers/repository/S3Bucket.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
+import {
+  CERTNUMBER_TIMESTAMP_MISSING,
+  CERTIFICATE_TO_VOID_NOT_FOUND,
+  CERTIFICATE_NOT_FROM_ADMIN_APP,
+  CERTIFICATE_TO_VOID_NOT_COMPLETE
+} from '~/src/server/common/helpers/error-constants.js'
 
 const BUCKET_FILENAME = 'ecert_certificates.json'
 const STATUS_COMPLETE = 'COMPLETE'
@@ -41,18 +47,45 @@ export const uploadCertificateDetails = async (request, newCertificate) => {
 
   if (!newCertificate.certNumber || !newCertificate.timestamp) {
     logger.error('"certNumber" and "timestamp" are required for upload')
-    return false
+    return {
+      error: CERTNUMBER_TIMESTAMP_MISSING
+    }
   }
 
-  const newCertificatelist = [
-    newCertificate,
-    ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
-  ]
+  let newCertificateList = []
+  const regex = /GBR-\d{4}-(CM|PM|SM)/g
+  const matches = regex.exec(newCertificate.certNumber)
+  if (matches && matches.length > 0) {
+    if (newCertificate.status === 'VOID') {
+      const existingCertificate = list.find(
+        (certificates) => certificates.certNumber === newCertificate.certNumber
+      )
+      if (!existingCertificate) {
+        return {
+          error: CERTIFICATE_TO_VOID_NOT_FOUND
+        }
+      }
+      if (existingCertificate.status !== 'COMPLETE') {
+        return {
+          error: CERTIFICATE_TO_VOID_NOT_COMPLETE
+        }
+      }
+    }
+    newCertificateList = [
+      newCertificate,
+      ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
+    ]
+  } else {
+    logger.error(`certNumber: ${newCertificate.certNumber} is not valid`)
+    return {
+      error: CERTIFICATE_NOT_FROM_ADMIN_APP
+    }
+  }
 
   return await upload(
     request.s3,
     BUCKET_FILENAME,
-    JSON.stringify(newCertificatelist)
+    JSON.stringify(newCertificateList)
   )
 }
 
@@ -61,7 +94,7 @@ export const removeDocument = async (request, certificateNumber) => {
   const list = await getList(request)
 
   if (!certificateNumber) {
-    logger.error('"certNumber" is required for upload')
+    logger.error('"certNumber" is required for removal')
     return false
   }
 

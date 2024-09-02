@@ -1,6 +1,10 @@
 import { enterIssueDateController } from '~/src/server/admin/enterIssueDate/controller.js'
-import { formatISO } from 'date-fns'
-import { setYarValue } from '~/src/server/common/helpers/yar-helper.js'
+import { formatISO, isFuture, isValid, parse } from 'date-fns'
+import { enGB } from 'date-fns/locale'
+import {
+  getYarValue,
+  setYarValue
+} from '~/src/server/common/helpers/yar-helper.js'
 
 /**
  * Sets up the routes used in the /admin/enter-issue-date page.
@@ -28,6 +32,38 @@ export const enterIssueDateRoutes = [
             'T00:00:00.000Z'
           : undefined
       setYarValue(request, 'timestamp', timestamp)
+
+      const issueDateInFuture = isFuture(new Date(year, month, day))
+      const parsedDate = parse(`${day}/${month}/${year}`, 'P', new Date(), {
+        locale: enGB
+      })
+      const issueDateIsValid = isValid(parsedDate)
+      if (issueDateInFuture || !issueDateIsValid) {
+        const badRequestStatusCode = 400
+        return h
+          .view('admin/enterIssueDate/index', {
+            pageTitle: 'Error: GOV.UK - Check an Export Certificate',
+            breadcrumbs: [
+              {
+                text: 'Home',
+                href: '/admin'
+              },
+              {
+                text: 'Enter Certificate Details'
+              }
+            ],
+            certNumber: getYarValue(request, 'certNumber'),
+            timestamp,
+            timestampDay: day,
+            timestampMonth: month,
+            timestampYear: year,
+            status: getYarValue(request, 'status'),
+            errorMessage: issueDateInFuture
+              ? 'Incorrect date. Enter a valid date to proceed'
+              : 'Date cannot be blank. Enter a valid date to proceed'
+          })
+          .code(badRequestStatusCode)
+      }
       return h.redirect('/admin/enter-certificate-status')
     }
   }

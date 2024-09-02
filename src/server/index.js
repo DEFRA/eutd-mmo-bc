@@ -1,6 +1,6 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
-
+import Boom from '@hapi/boom'
 import { config } from '~/src/config/index.js'
 import { nunjucksConfig } from '~/src/config/nunjucks/index.js'
 import { router } from './router.js'
@@ -14,6 +14,7 @@ import cookie from '@hapi/cookie'
 import { s3ClientPlugin } from '~/src/server/common/helpers/repository/S3Bucket.js'
 
 const isProduction = config.get('isProduction')
+const sessionAuth = 'session-auth'
 
 export async function createServer() {
   const server = hapi.server({
@@ -60,9 +61,9 @@ export async function createServer() {
 
   await server.register(cookie)
 
-  server.auth.strategy('session-auth', 'cookie', {
+  server.auth.strategy(sessionAuth, 'cookie', {
     cookie: {
-      name: 'session-auth',
+      name: sessionAuth,
       password: config.get('authCookiePassword'),
       isSecure: process.env.NODE_ENV === 'production'
     },
@@ -71,7 +72,7 @@ export async function createServer() {
       session.authenticated ? { isValid: true } : { isValid: false }
   })
 
-  server.auth.default('session-auth')
+  server.auth.default(sessionAuth)
 
   // Register the custom authentication scheme
   server.auth.scheme('api-key', apiKeyScheme)
@@ -97,9 +98,14 @@ const apiKeyScheme = () => {
       const apiKey = request.headers['x-api-key']
 
       if (!apiKey || apiKey !== config.get('apiAuth')) {
-        return h.unauthenticated(new Error('Invalid API key'), {
-          credentials: null
-        })
+        const error = Boom.unauthorized('Invalid API key')
+        error.output.payload = {
+          statusCode: 401,
+          error: 'Unauthorized',
+          message: 'Invalid API key'
+        }
+        error.output.headers['content-type'] = 'application/json' // Ensure JSON response
+        return h.unauthenticated(error)
       }
 
       const credentials = { apiKey }
