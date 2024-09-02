@@ -27,6 +27,7 @@ export const enterCertificateNumberRoutes = [
           (listItem) => listItem.certNumber === request.payload.certNumber
         ) !== -1
       ) {
+        const badRequestStatusCode = 400
         return h
           .view('admin/enterCertificateNumber/index', {
             pageTitle: 'Error: GOV.UK - Check an Export Certificate',
@@ -47,7 +48,7 @@ export const enterCertificateNumberRoutes = [
                 ? 'The certificate number cannot be empty'
                 : 'The certificate number already exists'
           })
-          .code(400)
+          .code(badRequestStatusCode)
       }
       setYarValue(request, 'certNumber', request.payload.certNumber)
       return h.redirect('/admin/enter-issue-date')
