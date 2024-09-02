@@ -190,6 +190,43 @@ describe('#checkCertificateDetailsController', () => {
     expect(statusCode).toBe(400)
     expect(payload).toContain('Only completed certificates can be voided')
   })
+
+  test('Should display error message for trying to complete a certificate which is not from the internal admin app', async () => {
+    const uploadSpy = jest
+      .spyOn(certificatesHelper, 'uploadCertificateDetails')
+      .mockResolvedValueOnce({
+        error: CERTIFICATE_NOT_FROM_ADMIN_APP
+      })
+    jest
+      .spyOn(yarHelpers, 'getYarValue')
+      .mockReturnValueOnce('GBR-2018-CC-123A4AW22')
+      .mockReturnValueOnce('2024-05-02T00:00:00.000Z')
+      .mockReturnValueOnce('COMPLETE')
+    const { statusCode, payload } = await server.inject({
+      method: 'POST',
+      url: '/admin/check-certificate-details',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        certNumber: 'GBR-2018-CC-123A4AW22',
+        timestamp: '2024-05-02T00:00:00.000Z',
+        status: 'COMPLETE'
+      }
+    })
+
+    expect(uploadSpy.mock.calls[0][1]).toStrictEqual({
+      certNumber: 'GBR-2018-CC-123A4AW22',
+      timestamp: '2024-05-02T00:00:00.000Z',
+      status: 'COMPLETE'
+    })
+    expect(statusCode).toBe(400)
+    expect(payload).toContain('Certificate cannot be completed')
+  })
 })
 
 /**

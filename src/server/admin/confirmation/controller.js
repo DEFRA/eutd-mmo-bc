@@ -34,7 +34,7 @@ export const confirmationController = {
       panelTitle:
         status === 'VOID'
           ? 'Certificate Details added - Voided'
-          : 'Certificate Details added'
+          : 'Certificate Details added - Completed'
     })
   }
 }

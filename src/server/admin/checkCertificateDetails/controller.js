@@ -25,8 +25,12 @@ export const getCheckCertificateDetailsModel = (request, error) => {
       errorMessage = 'The certificate you are trying to void does not exist'
       break
     case CERTIFICATE_NOT_FROM_ADMIN_APP:
-      errorMessage =
-        'The certificate you are trying to void was not created from the internal admin app'
+      if (request.payload.status === 'VOID') {
+        errorMessage =
+          'The certificate you are trying to void was not created from the internal admin app'
+      } else {
+        errorMessage = 'Certificate cannot be completed'
+      }
       break
     case CERTIFICATE_TO_VOID_NOT_COMPLETE:
       errorMessage = 'Only completed certificates can be voided'
