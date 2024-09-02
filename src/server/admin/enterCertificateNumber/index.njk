@@ -1,30 +1,65 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends 'layouts/page.njk' %}
 
 {% block content %}
+ 
+  {% if errorMessage %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: [
+        {
+          text: errorMessage,
+          href: "#certNumber"
+        }
+      ]
+    }) }}
+  {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <form action="/admin/enter-certificate-number" method="post" novalidate>
-        {{ govukInput({
-          label: {
-            text: "Enter the certificate number",
-            classes: "govuk-label--xl",
-            isPageHeading: true
-          },
-          hint: {
-            text: "For example, GBR-2018-CC-123A4BC56"
-          },
-          classes: "govuk-input--width-20",
-          id: "certNumber",
-          name: "certNumber",
-          attributes: {
-            spellcheck: "false"
-          },
-          value: certNumber
-        }) }}
-
+        {% if errorMessage %}
+          {{ govukInput({
+            label: {
+              text: "Enter the certificate number",
+              classes: "govuk-label--xl",
+              isPageHeading: true
+            },
+            hint: {
+              text: "For example, GBR-2018-CC-123A4BC56"
+            },
+            errorMessage: {
+              text: errorMessage
+            },
+            classes: "govuk-input--width-20 govuk-input--error",
+            id: "certNumber",
+            name: "certNumber",
+            attributes: {
+              spellcheck: "false"
+            },
+            value: certNumber
+          }) }}
+        {% else %}
+          {{ govukInput({
+            label: {
+              text: "Enter the certificate number",
+              classes: "govuk-label--xl",
+              isPageHeading: true
+            },
+            hint: {
+              text: "For example, GBR-2018-CC-123A4BC56"
+            },
+            classes: "govuk-input--width-20",
+            id: "certNumber",
+            name: "certNumber",
+            attributes: {
+              spellcheck: "false"
+            },
+            value: certNumber
+          }) }}
+        {% endif %}
         <input type="hidden" name="timestamp" value="{{ timestamp }}">
         <input type="hidden" name="status" value="{{ status }}">
 
