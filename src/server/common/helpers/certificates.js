@@ -41,7 +41,16 @@ export const getList = async (request) => {
   return await download(request.s3, BUCKET_FILENAME)
 }
 
-export const uploadCertificateDetails = async (request, newCertificate) => {
+const checkCertificateNumber = (certNumber) => {
+  const matches = /GBR-\d{4}-(CM|PM|SM)/g.exec(certNumber)
+  return matches && matches.length > 0 ? true : null
+}
+
+export const uploadCertificateDetails = async (
+  request,
+  newCertificate,
+  bypassRegex = false
+) => {
   const logger = createLogger()
   const list = await getList(request)
 
@@ -53,9 +62,9 @@ export const uploadCertificateDetails = async (request, newCertificate) => {
   }
 
   let newCertificateList = []
-  const regex = /GBR-\d{4}-(CM|PM|SM)/g
-  const matches = regex.exec(newCertificate.certNumber)
-  if (matches && matches.length > 0) {
+  const isAdminCertificate = checkCertificateNumber(newCertificate.certNumber)
+
+  if (isAdminCertificate === true || bypassRegex === true) {
     if (newCertificate.status === 'VOID') {
       const existingCertificate = list.find(
         (certificates) => certificates.certNumber === newCertificate.certNumber

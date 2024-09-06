@@ -3,7 +3,6 @@ import {
   setYarValue,
   getYarValue
 } from '~/src/server/common/helpers/yar-helper.js'
-import { getList } from '../../common/helpers/certificates.js'
 
 /**
  * Sets up the routes used in the /admin/enter-certificate-number page.
@@ -19,14 +18,8 @@ export const enterCertificateNumberRoutes = [
   {
     method: 'POST',
     path: '/admin/enter-certificate-number',
-    handler: async (request, h) => {
-      const list = await getList(request)
-      if (
-        request.payload.certNumber === '' ||
-        list.find(
-          (listItem) => listItem.certNumber === request.payload.certNumber
-        )
-      ) {
+    handler: (request, h) => {
+      if (request.payload.certNumber === '') {
         const badRequestStatusCode = 400
         return h
           .view('admin/enterCertificateNumber/index', {
@@ -43,10 +36,7 @@ export const enterCertificateNumberRoutes = [
             certNumber: request.payload.certNumber,
             timestamp: getYarValue(request, 'timestamp'),
             status: getYarValue(request, 'status'),
-            errorMessage:
-              request.payload.certNumber === ''
-                ? 'The certificate number cannot be empty'
-                : 'The certificate number already exists'
+            errorMessage: 'The certificate number cannot be empty'
           })
           .code(badRequestStatusCode)
       }
