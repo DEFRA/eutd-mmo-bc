@@ -33,7 +33,7 @@ export const enterIssueDateRoutes = [
           : undefined
       setYarValue(request, 'timestamp', timestamp)
 
-      const issueDateInFuture = isFuture(new Date(year, month, day))
+      const issueDateInFuture = isFuture(new Date(timestamp))
       const parsedDate = parse(`${day}/${month}/${year}`, 'P', new Date(), {
         locale: enGB
       })
