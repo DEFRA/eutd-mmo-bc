@@ -62,11 +62,9 @@ export const uploadCertificateDetails = async (
   }
 
   let newCertificateList = []
-  const isCertificateNumberValid = checkCertificateNumber(
-    newCertificate.certNumber
-  )
+  const isAdminCertificate = checkCertificateNumber(newCertificate.certNumber)
 
-  if (isCertificateNumberValid ?? bypassRegex) {
+  if (isAdminCertificate === true || bypassRegex === true) {
     if (newCertificate.status === 'VOID') {
       const existingCertificate = list.find(
         (certificates) => certificates.certNumber === newCertificate.certNumber
