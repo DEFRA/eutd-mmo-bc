@@ -55,7 +55,7 @@ export const getCertificates = {
 export const updateCertificateDetails = {
   async handler(request, h) {
     const payload = request.payload
-    const result = await uploadCertificateDetails(request, payload)
+    const result = await uploadCertificateDetails(request, payload, true)
     if (result.error) {
       return h
         .response(

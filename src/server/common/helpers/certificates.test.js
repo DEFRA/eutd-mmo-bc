@@ -239,7 +239,7 @@ describe('#certificates - upload', () => {
     )
   })
 
-  test('Should return false if there was no timestamp', async () => {
+  test('Should return an error if there was no timestamp', async () => {
     const request = {
       s3: jest.fn()
     }
@@ -255,7 +255,7 @@ describe('#certificates - upload', () => {
     })
   })
 
-  test('Should return false if there was no certNumber', async () => {
+  test('Should return an error if there was no certNumber', async () => {
     const request = {
       s3: jest.fn()
     }
@@ -320,6 +320,44 @@ describe('#certificates - upload', () => {
     expect(response).toStrictEqual({
       error: CERTIFICATE_NOT_FROM_ADMIN_APP
     })
+  })
+
+  test('Should upload a certificate with the wrong format if it is comming from the external endpoint', async () => {
+    const request = {
+      s3: jest.fn()
+    }
+    const updatedCertifiateJson = [
+      {
+        certNumber: 'GBR-2024-CC-123A4AW45',
+        status: 'COMPLETE',
+        timestamp: '2024-05-06T00:00:00.000Z'
+      },
+      {
+        certNumber: 'GBR-2024-CM-123A4AW06',
+        status: 'COMPLETE',
+        timestamp: '2024-05-06T00:00:00.000Z'
+      },
+      {
+        certNumber: 'GBR-2024-CM-123A4AW03',
+        status: 'DRAFT',
+        timestamp: '2024-07-06T00:00:00.000Z'
+      }
+    ]
+    jest.spyOn(S3Helpers, 'download').mockResolvedValue(certifiateJson)
+    jest.spyOn(S3Helpers, 'upload').mockResolvedValue(true)
+    await uploadCertificateDetails(
+      request,
+      {
+        certNumber: 'GBR-2024-CC-123A4AW45',
+        status: 'COMPLETE',
+        timestamp: '2024-05-06T00:00:00.000Z'
+      },
+      true
+    )
+    expect(S3Helpers.upload.mock.calls[0][1]).toBe('ecert_certificates.json')
+    expect(S3Helpers.upload.mock.calls[0][2]).toStrictEqual(
+      JSON.stringify(updatedCertifiateJson)
+    )
   })
 
   test('Should VOID a certificate', async () => {
