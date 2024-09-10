@@ -4,6 +4,8 @@
 
 {% extends 'layouts/page.njk' %}
 
+{% set errorInputClass = "govuk-input--error" if error else "" %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -16,7 +18,7 @@
           titleText: "There is a problem",
           errorList: [
             {
-              text: "Invalid Username/Password",
+              text: "Incorrect user name or password",
               href: "#username"
             }
           ]
@@ -28,7 +30,8 @@
             text: "Username"
           },
           id: "username",
-          name: "username"
+          name: "username",
+          classes: errorInputClass
         }) }}
 
         {{ govukInput({
@@ -37,7 +40,8 @@
           },
           type: 'password',
           id: "password",
-          name: "password"
+          name: "password",
+          classes: errorInputClass
         }) }}
 
         {{ govukButton({

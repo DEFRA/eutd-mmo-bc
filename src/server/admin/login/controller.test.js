@@ -70,7 +70,7 @@ describe('#loginController', () => {
     const $ = Cheerio.load(result)
 
     const errorMessage = $('ul.govuk-error-summary__list').text().trim()
-    expect(errorMessage).toBe('Invalid Username/Password')
+    expect(errorMessage).toBe('Incorrect user name or password')
   })
 
   test('Should not redirect the user if username is correct but the password is invalid', async () => {
