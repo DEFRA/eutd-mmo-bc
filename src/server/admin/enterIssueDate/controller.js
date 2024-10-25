@@ -28,7 +28,8 @@ export const enterIssueDateController = {
       timestampDay,
       timestampMonth,
       timestampYear,
-      status: getYarValue(request, 'status')
+      status: getYarValue(request, 'status'),
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

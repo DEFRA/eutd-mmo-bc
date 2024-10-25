@@ -60,7 +60,8 @@ export const enterIssueDateRoutes = [
             status: getYarValue(request, 'status'),
             errorMessage: issueDateInFuture
               ? 'Incorrect date. Enter a valid date to proceed'
-              : 'Date cannot be blank. Enter a valid date to proceed'
+              : 'Date cannot be blank. Enter a valid date to proceed',
+            loggedIn: request.auth.isAuthenticated
           })
           .code(badRequestStatusCode)
       }

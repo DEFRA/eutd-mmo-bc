@@ -36,7 +36,8 @@ export const enterCertificateNumberRoutes = [
             certNumber: request.payload.certNumber,
             timestamp: getYarValue(request, 'timestamp'),
             status: getYarValue(request, 'status'),
-            errorMessage: 'The certificate number cannot be empty'
+            errorMessage: 'The certificate number cannot be empty',
+            loggedIn: request.auth.isAuthenticated
           })
           .code(badRequestStatusCode)
       }

@@ -16,7 +16,8 @@ export const adminController = {
         {
           text: 'Enter Certificate Details'
         }
-      ]
+      ],
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

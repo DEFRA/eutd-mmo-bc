@@ -34,7 +34,8 @@ export const confirmationController = {
       panelTitle:
         status === 'VOID'
           ? 'Certificate Details added - Voided'
-          : 'Certificate Details added - Completed'
+          : 'Certificate Details added - Completed',
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

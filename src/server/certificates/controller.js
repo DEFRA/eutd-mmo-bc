@@ -22,7 +22,10 @@ export const certificatesController = {
     }
 
     const resultModel = await getCertificateDetails(request, certNumber.trim())
-    return h.view('result/index', resultModel)
+    return h.view('result/index', {
+      ...resultModel,
+      loggedIn: request.auth.isAuthenticated
+    })
   }
 }
 
@@ -42,7 +45,10 @@ export const validateCertificate = {
       request,
       certificateNumber.trim()
     )
-    return resultModel
+    return {
+      ...resultModel,
+      loggedIn: request.auth.isAuthenticated
+    }
   }
 }
 
