@@ -20,7 +20,8 @@ export const enterCertificateNumberController = {
       ],
       certNumber: getYarValue(request, 'certNumber'),
       timestamp: getYarValue(request, 'timestamp'),
-      status: getYarValue(request, 'status')
+      status: getYarValue(request, 'status'),
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

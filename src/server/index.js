@@ -67,7 +67,7 @@ export async function createServer() {
       password: config.get('authCookiePassword'),
       isSecure: process.env.NODE_ENV === 'production'
     },
-    redirectTo: '/admin/login',
+    redirectTo: '/login',
     validate: (_request, session) =>
       session.authenticated ? { isValid: true } : { isValid: false }
   })

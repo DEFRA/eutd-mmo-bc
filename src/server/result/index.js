@@ -17,7 +17,9 @@ export const result = {
           method: 'GET',
           path: '/result',
           options: {
-            auth: false
+            auth: {
+              mode: 'try'
+            }
           },
           ...resultController
         }

@@ -5,7 +5,7 @@
  */
 export const loginController = {
   handler(request, h) {
-    return h.view('admin/login/index', {
+    return h.view('login/index', {
       pageTitle: 'GOV.UK - Check an Export Certificate',
       heading: 'Sign in with your credentials',
       breadcrumbs: [
@@ -17,7 +17,8 @@ export const loginController = {
           text: 'Enter Certificate Details'
         }
       ],
-      error: request.query.error || false
+      error: request.query.error || false,
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

@@ -1,11 +1,11 @@
-import { loginController } from '~/src/server/admin/login/controller.js'
+import { loginController } from '~/src/server/login/controller.js'
 import { config } from '~/src/config/index.js'
 /**
- * Sets up the routes used in the /admin/login page.
+ * Sets up the routes used in the /login page.
  * These routes are registered in src/server/router.js.
  * @satisfies {ServerRegisterPluginObject<void>}
  */
-const path = '/admin/login'
+const path = '/login'
 export const login = {
   plugin: {
     name: 'login',
@@ -15,7 +15,9 @@ export const login = {
           method: 'GET',
           path,
           options: {
-            auth: false
+            auth: {
+              mode: 'try'
+            }
           },
           ...loginController
         },
@@ -23,7 +25,9 @@ export const login = {
           method: 'POST',
           path,
           options: {
-            auth: false
+            auth: {
+              mode: 'try'
+            }
           },
           handler: (request, h) => {
             const { username, password } = request.payload
@@ -45,8 +49,21 @@ export const login = {
               request.cookieAuth.set({ authenticated: true })
               return h.redirect('/admin')
             } else {
-              return h.redirect('/admin/login?error=true').takeover()
+              return h.redirect('/login?error=true').takeover()
             }
+          }
+        },
+        {
+          method: 'GET',
+          path: '/sign-out',
+          options: {
+            auth: {
+              mode: 'try'
+            }
+          },
+          handler(request, h) {
+            request.cookieAuth.clear()
+            return h.redirect('/login').takeover()
           }
         }
       ])

@@ -4,6 +4,14 @@
 
 {% extends 'layouts/page.njk' %}
 
+{% block header %}
+  {{ appHeader({
+    loggedIn: loggedIn,
+    serviceName: serviceName,
+    serviceUrl: serviceUrl
+  }) }}
+{% endblock %}
+
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",

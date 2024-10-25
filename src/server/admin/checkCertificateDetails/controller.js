@@ -53,7 +53,8 @@ export const getCheckCertificateDetailsModel = (request, error) => {
     certNumber: getYarValue(request, 'certNumber'),
     timestamp: getYarValue(request, 'timestamp'),
     status: getYarValue(request, 'status'),
-    errorMessage
+    errorMessage,
+    loggedIn: request.auth.isAuthenticated
   }
 }
 
