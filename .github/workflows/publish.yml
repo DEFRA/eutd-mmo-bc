@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - epic/FI0-7551-Business-Continuity
 
 permissions:
   id-token: write
