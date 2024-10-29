@@ -65,8 +65,11 @@ export async function createServer() {
     cookie: {
       name: sessionAuth,
       password: config.get('authCookiePassword'),
-      isSecure: process.env.NODE_ENV === 'production'
+      isSecure: process.env.NODE_ENV === 'production',
+      ttl: 1800000,
+      clearInvalid: true
     },
+    keepAlive: true,
     redirectTo: '/login',
     validate: (_request, session) =>
       session.authenticated ? { isValid: true } : { isValid: false }
