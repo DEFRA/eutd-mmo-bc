@@ -67,7 +67,8 @@ export async function createServer() {
       password: config.get('authCookiePassword'),
       isSecure: process.env.NODE_ENV === 'production',
       ttl: 1800000,
-      clearInvalid: true
+      clearInvalid: true,
+      path: '/'
     },
     keepAlive: true,
     redirectTo: '/login',
