@@ -24,7 +24,10 @@ export function catchAll(request, h) {
   const { response } = request
 
   if (!('isBoom' in response)) {
-    return h.continue
+    return response.header(
+      'Content-Security-Policy',
+      "default-src 'self' 'unsafe-inline'; img-src 'self'"
+    )
   }
 
   request.logger.error(response?.stack)

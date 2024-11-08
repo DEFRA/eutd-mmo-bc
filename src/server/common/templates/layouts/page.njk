@@ -9,6 +9,7 @@
 
 {% block head %}
   <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src 'self'"></meta>
 {% endblock %}
 
 {% block header %}
