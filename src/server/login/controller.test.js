@@ -114,6 +114,71 @@ describe('#loginController', () => {
   })
 })
 
+describe('loginController crumb', () => {
+  let server
+  const originalEnv = process.env
+
+  beforeAll(async () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production'
+    }
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterEach(async () => {
+    await server.stop()
+    jest.restoreAllMocks()
+    process.env = originalEnv
+  })
+
+  test('Should return a 403 with no crumb present', async () => {
+    const { statusCode } = await server.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        username: 'admin',
+        password: 'test'
+      }
+    })
+
+    expect(statusCode).toBe(403)
+  })
+
+  test('Should return a 302 with crumb present', async () => {
+    // needed to get the crumb token from the server
+    const res = await server.inject({
+      method: 'GET',
+      url: '/login'
+    })
+
+    const crumb = res.headers['set-cookie'][0]
+      .match(/crumb=([\w",;\\-]*);\s/)[1]
+      .trim()
+
+    jest
+      .spyOn(config, 'get')
+      .mockReturnValue([{ username: 'admin', password: 'test' }])
+    const { statusCode, raw } = await server.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        username: 'admin',
+        password: 'test',
+        crumb
+      },
+      headers: {
+        cookie: 'crumb=' + crumb
+      }
+    })
+
+    expect(raw.res._shot.headers.location).toBe('/admin')
+    expect(statusCode).toBe(302)
+  })
+})
+
 /**
  * @import { Server } from '@hapi/hapi'
  */

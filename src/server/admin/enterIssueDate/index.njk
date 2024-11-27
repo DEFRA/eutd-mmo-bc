@@ -105,7 +105,7 @@
 
         <input type="hidden" name="certNumber" value="{{ certNumber }}">
         <input type="hidden" name="status" value="{{ status }}">
-
+        <input type="hidden" name="crumb" id="crumb" value="{{ crumb }}" autocomplete="off"/>
         {{ govukButton({
           text: "Continue",
           preventDoubleClick: true
