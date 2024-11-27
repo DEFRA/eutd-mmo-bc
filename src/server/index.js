@@ -12,6 +12,7 @@ import { getCacheEngine } from '~/src/server/common/helpers/session-cache/cache-
 import { pulse } from '~/src/server/common/helpers/pulse.js'
 import cookie from '@hapi/cookie'
 import { s3ClientPlugin } from '~/src/server/common/helpers/repository/S3Bucket.js'
+import crumb from '@hapi/crumb'
 
 const isProduction = config.get('isProduction')
 const sessionAuth = 'session-auth'
@@ -90,6 +91,16 @@ export async function createServer() {
     nunjucksConfig,
     router // Register all the controllers/routes defined in src/server/router.js
   ])
+
+  await server.register({
+    plugin: crumb,
+    options: {
+      enforce: process.env.NODE_ENV !== 'test',
+      cookieOptions: {
+        isSecure: process.env.NODE_ENV !== 'development'
+      }
+    }
+  })
 
   server.ext('onPreResponse', catchAll)
 
