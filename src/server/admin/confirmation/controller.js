@@ -1,7 +1,4 @@
-import {
-  getYarValue,
-  clearYarValue
-} from '~/src/server/common/helpers/yar-helper.js'
+import { clearYarValue } from '~/src/server/common/helpers/yar-helper.js'
 
 /**
  * A GDS styled example about page controller.
@@ -10,9 +7,7 @@ import {
  */
 export const confirmationController = {
   handler(request, h) {
-    const certNumber = getYarValue(request, 'certNumber')
-    const timestamp = getYarValue(request, 'timestamp')
-    const status = getYarValue(request, 'status')
+    const { certificateNumber, status } = request.params
 
     clearYarValue(request, 'certNumber')
     clearYarValue(request, 'timestamp')
@@ -29,8 +24,7 @@ export const confirmationController = {
           text: 'Enter Certificate Details'
         }
       ],
-      certNumber,
-      timestamp,
+      certificateNumber,
       panelTitle:
         status === 'VOID'
           ? 'Certificate Details added - Voided'

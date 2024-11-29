@@ -19,10 +19,12 @@ export const checkCertificateDetailsRoutes = [
     method: 'POST',
     path,
     handler: async (request, h) => {
+      const status = request.payload.status
+      const certNumber = request.payload.certNumber
       const newCert = {
-        certNumber: request.payload.certNumber,
+        certNumber,
         timestamp: request.payload.timestamp,
-        status: request.payload.status
+        status
       }
       const result = await uploadCertificateDetails(request, newCert)
       if (result.error) {
@@ -34,7 +36,7 @@ export const checkCertificateDetailsRoutes = [
           )
           .code(errorCode)
       } else {
-        return h.redirect('/admin/confirmation')
+        return h.redirect(`/admin/confirmation/${certNumber}/${status}`)
       }
     }
   }
