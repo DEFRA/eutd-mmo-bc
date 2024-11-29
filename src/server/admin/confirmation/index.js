@@ -8,7 +8,7 @@ import { confirmationController } from '~/src/server/admin/confirmation/controll
 export const confirmationRoutes = [
   {
     method: 'GET',
-    path: '/admin/confirmation',
+    path: '/admin/confirmation/{certificateNumber}/{status}',
     ...confirmationController
   }
 ]
