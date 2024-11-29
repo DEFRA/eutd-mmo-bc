@@ -9,7 +9,8 @@ import {
   CERTNUMBER_TIMESTAMP_MISSING,
   CERTIFICATE_TO_VOID_NOT_FOUND,
   CERTIFICATE_NOT_FROM_ADMIN_APP,
-  CERTIFICATE_TO_VOID_NOT_COMPLETE
+  CERTIFICATE_TO_VOID_NOT_COMPLETE,
+  CERTIFICATE_ALREADY_VOID
 } from '~/src/server/common/helpers/error-constants.js'
 
 describe('#certificates - download', () => {
@@ -319,6 +320,29 @@ describe('#certificates - upload', () => {
     expect(S3Helpers.upload).not.toHaveBeenCalled()
     expect(response).toStrictEqual({
       error: CERTIFICATE_NOT_FROM_ADMIN_APP
+    })
+  })
+
+  test('Should return an error when trying to complete a certificate that is void', async () => {
+    const request = {
+      s3: jest.fn()
+    }
+    jest.spyOn(S3Helpers, 'download').mockResolvedValue([
+      {
+        certNumber: 'GBR-2024-CM-123A4AW06',
+        status: 'VOID',
+        timestamp: '2024-05-06T00:00:00.000Z'
+      }
+    ])
+    jest.spyOn(S3Helpers, 'upload').mockResolvedValue(true)
+    const response = await uploadCertificateDetails(request, {
+      certNumber: 'GBR-2024-CM-123A4AW06',
+      status: 'COMPLETE',
+      timestamp: '2024-05-06T00:00:00.000Z'
+    })
+    expect(S3Helpers.upload).not.toHaveBeenCalled()
+    expect(response).toStrictEqual({
+      error: CERTIFICATE_ALREADY_VOID
     })
   })
 

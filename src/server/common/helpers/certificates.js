@@ -8,7 +8,8 @@ import {
   CERTNUMBER_TIMESTAMP_MISSING,
   CERTIFICATE_TO_VOID_NOT_FOUND,
   CERTIFICATE_NOT_FROM_ADMIN_APP,
-  CERTIFICATE_TO_VOID_NOT_COMPLETE
+  CERTIFICATE_TO_VOID_NOT_COMPLETE,
+  CERTIFICATE_ALREADY_VOID
 } from '~/src/server/common/helpers/error-constants.js'
 
 const BUCKET_FILENAME = 'ecert_certificates.json'
@@ -65,10 +66,10 @@ export const uploadCertificateDetails = async (
   const isAdminCertificate = checkCertificateNumber(newCertificate.certNumber)
 
   if (isAdminCertificate === true || bypassRegex === true) {
+    const existingCertificate = list.find(
+      (certificates) => certificates.certNumber === newCertificate.certNumber
+    )
     if (newCertificate.status === 'VOID') {
-      const existingCertificate = list.find(
-        (certificates) => certificates.certNumber === newCertificate.certNumber
-      )
       if (!existingCertificate) {
         return {
           error: CERTIFICATE_TO_VOID_NOT_FOUND
@@ -78,6 +79,14 @@ export const uploadCertificateDetails = async (
         return {
           error: CERTIFICATE_TO_VOID_NOT_COMPLETE
         }
+      }
+    }
+    if (
+      existingCertificate?.status === 'VOID' &&
+      newCertificate.status === 'COMPLETE'
+    ) {
+      return {
+        error: CERTIFICATE_ALREADY_VOID
       }
     }
     newCertificateList = [

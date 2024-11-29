@@ -4,7 +4,8 @@ import * as yarHelpers from '~/src/server/common/helpers/yar-helper.js'
 import {
   CERTIFICATE_TO_VOID_NOT_FOUND,
   CERTIFICATE_NOT_FROM_ADMIN_APP,
-  CERTIFICATE_TO_VOID_NOT_COMPLETE
+  CERTIFICATE_TO_VOID_NOT_COMPLETE,
+  CERTIFICATE_ALREADY_VOID
 } from '~/src/server/common/helpers/error-constants.js'
 
 describe('#checkCertificateDetailsController', () => {
@@ -189,6 +190,45 @@ describe('#checkCertificateDetailsController', () => {
     })
     expect(statusCode).toBe(400)
     expect(payload).toContain('Only completed certificates can be voided')
+  })
+
+  test('Should display error message for trying to complete a void certificate', async () => {
+    const uploadSpy = jest
+      .spyOn(certificatesHelper, 'uploadCertificateDetails')
+      .mockResolvedValueOnce({
+        error: CERTIFICATE_ALREADY_VOID
+      })
+    jest
+      .spyOn(yarHelpers, 'getYarValue')
+      .mockReturnValueOnce('GBR-2018-CM-123A4AW22')
+      .mockReturnValueOnce('2024-05-02T00:00:00.000Z')
+      .mockReturnValueOnce('VOID')
+    const { statusCode, payload } = await server.inject({
+      method: 'POST',
+      url: '/admin/check-certificate-details',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        certNumber: 'GBR-2018-CM-123A4AW22',
+        timestamp: '2024-05-02T00:00:00.000Z',
+        status: 'COMPLETE'
+      }
+    })
+
+    expect(uploadSpy.mock.calls[0][1]).toStrictEqual({
+      certNumber: 'GBR-2018-CM-123A4AW22',
+      timestamp: '2024-05-02T00:00:00.000Z',
+      status: 'COMPLETE'
+    })
+    expect(statusCode).toBe(400)
+    expect(payload).toContain(
+      'This certificate has already been Void, it cannot be marked as completed'
+    )
   })
 
   test('Should display error message for trying to complete a certificate which is not from the internal admin app', async () => {
