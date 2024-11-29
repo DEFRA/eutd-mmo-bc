@@ -69,26 +69,15 @@ export const uploadCertificateDetails = async (
     const existingCertificate = list.find(
       (certificates) => certificates.certNumber === newCertificate.certNumber
     )
-    if (newCertificate.status === 'VOID') {
-      if (!existingCertificate) {
-        return {
-          error: CERTIFICATE_TO_VOID_NOT_FOUND
-        }
-      }
-      if (existingCertificate.status !== 'COMPLETE') {
-        return {
-          error: CERTIFICATE_TO_VOID_NOT_COMPLETE
-        }
-      }
+    const uploadErrors = checkForUploadErrors(
+      existingCertificate,
+      newCertificate
+    )
+
+    if (uploadErrors) {
+      return uploadErrors
     }
-    if (
-      existingCertificate?.status === 'VOID' &&
-      newCertificate.status === 'COMPLETE'
-    ) {
-      return {
-        error: CERTIFICATE_ALREADY_VOID
-      }
-    }
+
     newCertificateList = [
       newCertificate,
       ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
@@ -105,6 +94,28 @@ export const uploadCertificateDetails = async (
     BUCKET_FILENAME,
     JSON.stringify(newCertificateList)
   )
+}
+const checkForUploadErrors = (existingCertificate, newCertificate) => {
+  if (newCertificate.status === 'VOID') {
+    if (!existingCertificate) {
+      return {
+        error: CERTIFICATE_TO_VOID_NOT_FOUND
+      }
+    }
+    if (existingCertificate.status !== 'COMPLETE') {
+      return {
+        error: CERTIFICATE_TO_VOID_NOT_COMPLETE
+      }
+    }
+  }
+  if (
+    existingCertificate?.status === 'VOID' &&
+    newCertificate.status === 'COMPLETE'
+  ) {
+    return {
+      error: CERTIFICATE_ALREADY_VOID
+    }
+  }
 }
 
 export const removeDocument = async (request, certificateNumber) => {
