@@ -1,6 +1,6 @@
 import { createServer } from '~/src/server/index.js'
 import { config } from '~/src/config/index.js'
-import Cheerio from 'cheerio'
+import { load } from 'cheerio'
 
 describe('#loginController', () => {
   /** @type {Server} */
@@ -67,7 +67,7 @@ describe('#loginController', () => {
 
     const { result } = response
 
-    const $ = Cheerio.load(result)
+    const $ = load(result)
 
     const errorMessage = $('ul.govuk-error-summary__list').text().trim()
     expect(errorMessage).toBe('Incorrect user name or password')
