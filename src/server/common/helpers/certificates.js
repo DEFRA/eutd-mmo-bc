@@ -47,6 +47,9 @@ const checkCertificateNumber = (certNumber) => {
   return matches && matches.length > 0 ? true : null
 }
 
+const checkCertificateTimestamp = (newCertificate) =>
+  !newCertificate.certNumber || !newCertificate.timestamp
+
 export const uploadCertificateDetails = async (
   request,
   newCertificate,
@@ -55,7 +58,7 @@ export const uploadCertificateDetails = async (
   const logger = createLogger()
   const list = await getList(request)
 
-  if (!newCertificate.certNumber || !newCertificate.timestamp) {
+  if (checkCertificateTimestamp(newCertificate)) {
     logger.error('"certNumber" and "timestamp" are required for upload')
     return {
       error: CERTNUMBER_TIMESTAMP_MISSING
