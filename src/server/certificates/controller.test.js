@@ -104,7 +104,8 @@ describe(`API call for '/certificates/{certificateNumber} swagger endpoint`, () 
     certNumber: 'GBR-2024-CC-123A4BC56',
     timestamp: '12 MAY 2024',
     status: 'COMPLETE',
-    isValid: true
+    isValid: true,
+    loggedIn: false
   }
 
   beforeAll(async () => {

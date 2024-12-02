@@ -16,7 +16,8 @@ export const homeController = {
         {
           text: 'Validate Certificate Number'
         }
-      ]
+      ],
+      loggedIn: request.auth.isAuthenticated
     })
   }
 }

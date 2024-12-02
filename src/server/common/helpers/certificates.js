@@ -8,7 +8,8 @@ import {
   CERTNUMBER_TIMESTAMP_MISSING,
   CERTIFICATE_TO_VOID_NOT_FOUND,
   CERTIFICATE_NOT_FROM_ADMIN_APP,
-  CERTIFICATE_TO_VOID_NOT_COMPLETE
+  CERTIFICATE_TO_VOID_NOT_COMPLETE,
+  CERTIFICATE_ALREADY_VOID
 } from '~/src/server/common/helpers/error-constants.js'
 
 const BUCKET_FILENAME = 'ecert_certificates.json'
@@ -46,6 +47,9 @@ const checkCertificateNumber = (certNumber) => {
   return matches && matches.length > 0 ? true : null
 }
 
+const checkCertificateTimestamp = (newCertificate) =>
+  !newCertificate.certNumber || !newCertificate.timestamp
+
 export const uploadCertificateDetails = async (
   request,
   newCertificate,
@@ -54,7 +58,7 @@ export const uploadCertificateDetails = async (
   const logger = createLogger()
   const list = await getList(request)
 
-  if (!newCertificate.certNumber || !newCertificate.timestamp) {
+  if (checkCertificateTimestamp(newCertificate)) {
     logger.error('"certNumber" and "timestamp" are required for upload')
     return {
       error: CERTNUMBER_TIMESTAMP_MISSING
@@ -65,21 +69,18 @@ export const uploadCertificateDetails = async (
   const isAdminCertificate = checkCertificateNumber(newCertificate.certNumber)
 
   if (isAdminCertificate === true || bypassRegex === true) {
-    if (newCertificate.status === 'VOID') {
-      const existingCertificate = list.find(
-        (certificates) => certificates.certNumber === newCertificate.certNumber
-      )
-      if (!existingCertificate) {
-        return {
-          error: CERTIFICATE_TO_VOID_NOT_FOUND
-        }
-      }
-      if (existingCertificate.status !== 'COMPLETE') {
-        return {
-          error: CERTIFICATE_TO_VOID_NOT_COMPLETE
-        }
-      }
+    const existingCertificate = list.find(
+      (certificates) => certificates.certNumber === newCertificate.certNumber
+    )
+    const uploadErrors = checkForUploadErrors(
+      existingCertificate,
+      newCertificate
+    )
+
+    if (uploadErrors) {
+      return uploadErrors
     }
+
     newCertificateList = [
       newCertificate,
       ...list.filter((entry) => entry.certNumber !== newCertificate.certNumber)
@@ -96,6 +97,30 @@ export const uploadCertificateDetails = async (
     BUCKET_FILENAME,
     JSON.stringify(newCertificateList)
   )
+}
+const checkForUploadErrors = (existingCertificate, newCertificate) => {
+  if (newCertificate.status === 'VOID') {
+    if (!existingCertificate) {
+      return {
+        error: CERTIFICATE_TO_VOID_NOT_FOUND
+      }
+    }
+    if (existingCertificate.status !== 'COMPLETE') {
+      return {
+        error: CERTIFICATE_TO_VOID_NOT_COMPLETE
+      }
+    }
+  }
+  if (
+    existingCertificate?.status === 'VOID' &&
+    newCertificate.status === 'COMPLETE'
+  ) {
+    return {
+      error: CERTIFICATE_ALREADY_VOID
+    }
+  }
+
+  return null
 }
 
 export const removeDocument = async (request, certificateNumber) => {

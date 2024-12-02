@@ -16,15 +16,10 @@ describe('#confirmationController', () => {
   })
 
   test('Should load the confirmation page with values present in yar', async () => {
-    jest
-      .spyOn(yarHelpers, 'getYarValue')
-      .mockReturnValueOnce('GBR-2018-CC-123A4AW15')
-      .mockReturnValueOnce('2024-05-02T00:00:00.000Z')
-      .mockReturnValueOnce('COMPLETE')
     const clearSpy = jest.spyOn(yarHelpers, 'clearYarValue')
     const { payload } = await server.inject({
       method: 'GET',
-      url: '/admin/confirmation',
+      url: '/admin/confirmation/GBR-2018-CC-123A4AW15/COMPLETE',
       auth: {
         strategy: 'session-auth',
         credentials: {
@@ -44,15 +39,10 @@ describe('#confirmationController', () => {
   })
 
   test('Should load the confirmation page with a VOID', async () => {
-    jest
-      .spyOn(yarHelpers, 'getYarValue')
-      .mockReturnValueOnce('GBR-2018-CC-123A4AW15')
-      .mockReturnValueOnce('2024-05-02T00:00:00.000Z')
-      .mockReturnValueOnce('VOID')
     const clearSpy = jest.spyOn(yarHelpers, 'clearYarValue')
     const { payload } = await server.inject({
       method: 'GET',
-      url: '/admin/confirmation',
+      url: '/admin/confirmation/GBR-2018-CC-123A4AW15/VOID',
       auth: {
         strategy: 'session-auth',
         credentials: {

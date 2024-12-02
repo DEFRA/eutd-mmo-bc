@@ -3,6 +3,14 @@
 
 {% extends 'layouts/page.njk' %}
 
+{% block header %}
+  {{ appHeader({
+    loggedIn: loggedIn,
+    serviceName: serviceName,
+    serviceUrl: serviceUrl
+  }) }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -33,7 +41,7 @@
 
         <input type="hidden" name="certNumber" value="{{ certNumber }}">
         <input type="hidden" name="timestamp" value="{{ timestamp }}">
-
+        <input type="hidden" name="crumb" id="crumb" value="{{ crumb }}" autocomplete="off"/>
         {{ govukButton({
           text: "Save to system",
           preventDoubleClick: true

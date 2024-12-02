@@ -2,7 +2,8 @@ import { getYarValue } from '~/src/server/common/helpers/yar-helper.js'
 import {
   CERTIFICATE_TO_VOID_NOT_FOUND,
   CERTIFICATE_NOT_FROM_ADMIN_APP,
-  CERTIFICATE_TO_VOID_NOT_COMPLETE
+  CERTIFICATE_TO_VOID_NOT_COMPLETE,
+  CERTIFICATE_ALREADY_VOID
 } from '~/src/server/common/helpers/error-constants.js'
 /**
  * A GDS styled example about page controller.
@@ -35,6 +36,10 @@ export const getCheckCertificateDetailsModel = (request, error) => {
     case CERTIFICATE_TO_VOID_NOT_COMPLETE:
       errorMessage = 'Only completed certificates can be voided'
       break
+    case CERTIFICATE_ALREADY_VOID:
+      errorMessage =
+        'This certificate has already been Void, it cannot be marked as completed'
+      break
     default:
       break
   }
@@ -53,7 +58,8 @@ export const getCheckCertificateDetailsModel = (request, error) => {
     certNumber: getYarValue(request, 'certNumber'),
     timestamp: getYarValue(request, 'timestamp'),
     status: getYarValue(request, 'status'),
-    errorMessage
+    errorMessage,
+    loggedIn: request.auth.isAuthenticated
   }
 }
 

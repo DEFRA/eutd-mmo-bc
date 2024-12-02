@@ -84,6 +84,93 @@ describe('#enterCerficateNumberController', () => {
   })
 })
 
+describe('enterCertificateNumberController crumb', () => {
+  let server
+  const originalEnv = process.env
+
+  beforeAll(async () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production'
+    }
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterEach(async () => {
+    await server.stop()
+    jest.restoreAllMocks()
+    process.env = originalEnv
+  })
+
+  test('Should return a 403 with no crumb present', async () => {
+    jest.spyOn(yarHelpers, 'setYarValue')
+    const { statusCode } = await server.inject({
+      method: 'POST',
+      url: '/admin/enter-certificate-number',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        certNumber: 'GBR-2018-CC-123A4AW22'
+      }
+    })
+
+    expect(statusCode).toBe(403)
+  })
+
+  test('Should return a 302 with crumb present', async () => {
+    jest.spyOn(yarHelpers, 'setYarValue')
+
+    // needed to get the crumb token from the server
+    const res = await server.inject({
+      method: 'GET',
+      url: '/admin/enter-certificate-number',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      }
+    })
+
+    const crumb = res.headers['set-cookie'][0]
+      .match(/crumb=([\w",;\\-]*);\s/)[1]
+      .trim()
+
+    jest.spyOn(yarHelpers, 'setYarValue')
+    const { statusCode } = await server.inject({
+      method: 'POST',
+      url: '/admin/enter-certificate-number',
+      auth: {
+        strategy: 'session-auth',
+        credentials: {
+          username: 'test',
+          password: 'test'
+        }
+      },
+      payload: {
+        certNumber: 'GBR-2018-CC-123A4AW22',
+        crumb
+      },
+      headers: {
+        cookie: 'crumb=' + crumb
+      }
+    })
+
+    expect(yarHelpers.setYarValue.mock.calls[0][2]).toBe(
+      'GBR-2018-CC-123A4AW22'
+    )
+    expect(statusCode).toBe(302)
+  })
+})
+
 /**
  * @import { Server } from '@hapi/hapi'
  */

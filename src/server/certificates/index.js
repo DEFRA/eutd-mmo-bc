@@ -28,7 +28,9 @@ export const certificates = {
         method: 'GET',
         path: '/certificates',
         options: {
-          auth: false
+          auth: {
+            mode: 'try'
+          }
         },
         ...certificatesController
       })
@@ -38,7 +40,9 @@ export const certificates = {
         path: '/certificates/{certificateNumber}',
         options: {
           ...validateCertificate,
-          auth: false,
+          auth: {
+            mode: 'try'
+          },
           description:
             'Validate an Export Certificate by providing an Certificate Number',
           plugins: {

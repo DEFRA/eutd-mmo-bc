@@ -3,11 +3,13 @@
 {% from "page-body/macro.njk" import appPageBody %}
 {% from "breadcrumbs/macro.njk" import appBreadcrumbs %}
 {% from "heading/macro.njk" import appHeading %}
+{% from "header/macro.njk" import appHeader %}
 
 {% set mainClasses = "app-main-wrapper" %}
 
 {% block head %}
   <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src 'self'"></meta>
 {% endblock %}
 
 {% block header %}
@@ -17,7 +19,13 @@
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
     serviceUrl: serviceUrl,
-    useTudorCrown: true
+    useTudorCrown: true,
+    navigation: [
+      {
+        href: "/admin",
+        text: "Admin"
+      }
+    ]
   }) }}
 {% endblock %}
 
