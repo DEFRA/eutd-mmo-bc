@@ -119,6 +119,8 @@ const checkForUploadErrors = (existingCertificate, newCertificate) => {
       error: CERTIFICATE_ALREADY_VOID
     }
   }
+
+  return null
 }
 
 export const removeDocument = async (request, certificateNumber) => {

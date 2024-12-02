@@ -56,7 +56,9 @@ export async function createServer() {
 
   await server.register([requestLogger, s3ClientPlugin])
 
-  if (isProduction) await server.register(secureContext)
+  if (isProduction) {
+    await server.register(secureContext)
+  }
 
   await server.register(cookie)
 
@@ -76,11 +78,7 @@ export async function createServer() {
   })
 
   server.auth.default(sessionAuth)
-
-  // Register the custom authentication scheme
   server.auth.scheme('api-key', apiKeyScheme)
-
-  // Define an authentication strategy using the custom scheme
   server.auth.strategy('api-key-strategy', 'api-key')
 
   await server.register([
