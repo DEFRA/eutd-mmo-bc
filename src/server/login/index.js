@@ -33,9 +33,7 @@ export const login = {
             const { username, password } = request.payload
             const users = config.get('users')
             let validUser = true
-            const userObj = users.find(
-              (userObj) => userObj.username === username
-            )
+            const userObj = users.find((user) => user.username === username)
 
             if (!userObj) {
               validUser = false

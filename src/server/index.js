@@ -56,9 +56,7 @@ export async function createServer() {
 
   await server.register([requestLogger, s3ClientPlugin])
 
-  if (isProduction) {
-    await server.register(secureContext)
-  }
+  if (isProduction) await server.register(secureContext)
 
   await server.register(cookie)
 
