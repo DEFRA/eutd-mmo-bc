@@ -1,5 +1,6 @@
 import { createServer } from '~/src/server/index.js'
 import * as Certificates from '~/src/server/common/helpers/certificates.js'
+import * as BulkUpload from '~/src/server/common/helpers/bulk-upload.js'
 import { config } from '~/src/config/index.js'
 import { CERTIFICATE_NOT_FROM_ADMIN_APP } from '~/src/server/common/helpers/error-constants.js'
 
@@ -162,7 +163,8 @@ describe(`API call for '/certificates/{certificateNumber} swagger endpoint`, () 
 describe('API calls for GET/PUT/DELETE', () => {
   /** @type {Server} */
   let server
-  let mockGetCertificate, mockPutCertificate, mockDeleteCertificate
+  let mockGetCertificate, mockPutCertificate
+  let mockDeleteCertificate, mockBulkUploadCertificate
   const apiHeaderKey = config.get('apiAuth')
   const result = [
     {
@@ -183,12 +185,17 @@ describe('API calls for GET/PUT/DELETE', () => {
     mockPutCertificate = jest.spyOn(Certificates, 'uploadCertificateDetails')
     mockDeleteCertificate = jest.spyOn(Certificates, 'removeDocument')
     mockGetCertificate.mockResolvedValue(result)
+    mockBulkUploadCertificate = jest.spyOn(
+      BulkUpload,
+      'bulkUploadCertificateDetails'
+    )
   })
 
   afterEach(async () => {
     await server.stop()
     mockGetCertificate.mockRestore()
     mockPutCertificate.mockRestore()
+    mockBulkUploadCertificate.mockRestore()
   })
 
   test('Should call the api certficates api successfully', async () => {
@@ -227,10 +234,54 @@ describe('API calls for GET/PUT/DELETE', () => {
         status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(payload).toContain('Success')
     expect(statusCode).toBe(200)
+  })
+
+  test('Should bulk update the certificates successfully', async () => {
+    mockBulkUploadCertificate.mockResolvedValue(undefined)
+    const { statusCode, payload } = await server.inject({
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      payload: [
+        {
+          certNumber: 'GBR-2024-CC-123A4AW03',
+          status: 'COMPLETE',
+          timestamp: '2024-07-06T00:00:00.000Z'
+        }
+      ],
+      url: '/api/certificates'
+    })
+    expect(payload).toContain('Success')
+    expect(statusCode).toBe(200)
+  })
+
+  test('Should bulk update the certificates unsuccessfully', async () => {
+    mockBulkUploadCertificate.mockRejectedValue(
+      new Error('something has gone wrong')
+    )
+    const { statusCode, payload } = await server.inject({
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiHeaderKey
+      },
+      payload: [
+        {
+          certNumber: 'GBR-2024-CC-123A4AW03',
+          status: 'COMPLETE',
+          timestamp: '2024-07-06T00:00:00.000Z'
+        }
+      ],
+      url: '/api/certificates'
+    })
+    expect(payload).toContain(
+      'Error bulk updating certificate Error: something has gone wrong'
+    )
+    expect(statusCode).toBe(500)
   })
 
   test('Should delete the certificate details successfully', async () => {
@@ -240,7 +291,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(payload).toContain('Success')
     expect(statusCode).toBe(200)
@@ -255,7 +306,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
-      url: `/api/certificates/certificateNumber`,
+      url: '/api/certificates/certificateNumber',
       payload: {
         certNumber: 'GBR-2024-CC-123A4AW03',
         status: 'COMPLETE',
@@ -272,7 +323,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(statusCode).toBe(400)
   })
@@ -289,7 +340,7 @@ describe('API calls for GET/PUT/DELETE', () => {
         status: 'COMPLETE',
         timestamp: '2024-07-06T00:00:00.000Z'
       },
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(statusCode).toBe(500)
   })
@@ -301,7 +352,7 @@ describe('API calls for GET/PUT/DELETE', () => {
       headers: {
         'x-api-key': apiHeaderKey
       },
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(statusCode).toBe(500)
   })
@@ -311,7 +362,7 @@ describe('API calls for GET/PUT/DELETE', () => {
     const { statusCode } = await server.inject({
       method: 'PUT',
       headers: {},
-      url: `/api/certificates/certificateNumber`
+      url: '/api/certificates/certificateNumber'
     })
     expect(statusCode).toBe(401)
   })

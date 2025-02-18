@@ -4,6 +4,7 @@ import {
   removeDocument,
   getList
 } from '../common/helpers/certificates.js'
+import { bulkUploadCertificateDetails } from '../common/helpers/bulk-upload.js'
 
 /**
  * A certificates check endpoint. Used by the platform to check if the provided certificates exists.
@@ -70,6 +71,23 @@ export const updateCertificateDetails = {
         .code(400)
     } else {
       return h.response(`Success`)
+    }
+  }
+}
+
+export const updateCertificatesDetails = {
+  async handler(request, h) {
+    const payload = request.payload
+    try {
+      await bulkUploadCertificateDetails(request, payload)
+      return h.response(`Success`)
+    } catch (e) {
+      return h
+        .response(
+          `
+          Error bulk updating certificate ${e}`
+        )
+        .code(500)
     }
   }
 }
