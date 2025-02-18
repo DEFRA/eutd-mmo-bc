@@ -18,13 +18,13 @@ export const bulkUploadCertificateDetails = async (
         ...newCertificate,
         status: 'COMPLETE'
       }
-      const result = await uploadCertificateDetails(
+      const res = await uploadCertificateDetails(
         request,
         completeCertificate,
         true
       )
-      if (result.error) {
-        logger.error(`Error: ${newCertificate.certNumber} ${result.error}`)
+      if (res.error) {
+        logger.error(`Error: ${newCertificate.certNumber} ${res.error}`)
         continue
       }
     }

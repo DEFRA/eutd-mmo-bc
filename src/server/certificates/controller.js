@@ -82,12 +82,13 @@ export const updateCertificatesDetails = {
       await bulkUploadCertificateDetails(request, payload)
       return h.response(`Success`)
     } catch (e) {
+      const errorCode500 = 500
       return h
         .response(
           `
           Error bulk updating certificate ${e}`
         )
-        .code(500)
+        .code(errorCode500)
     }
   }
 }
