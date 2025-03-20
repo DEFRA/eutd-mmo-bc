@@ -2,6 +2,7 @@ import Joi from 'joi'
 import {
   certificatesController,
   updateCertificateDetails,
+  updateCertificatesDetails,
   removeCertificateDetails,
   getCertificates,
   validateCertificate
@@ -104,6 +105,27 @@ export const certificates = {
               timestamp: timestampJoi,
               status: Joi.string().example('COMPLETE')
             }).label('Paylod')
+          }
+        }
+      })
+
+      server.route({
+        method: 'PUT',
+        path: '/api/certificates',
+        options: {
+          ...updateCertificatesDetails,
+          auth: apiKeyAuthStrategy,
+          description: 'Include details of Export Certificates',
+          notes: 'The Certificate Numbers to include',
+          plugins: {
+            'hapi-swagger': {
+              responses: httpStatuses,
+              id: 'includeCertificateDetails'
+            }
+          },
+          tags: apiTags,
+          validate: {
+            payload: Joi.array()
           }
         }
       })
