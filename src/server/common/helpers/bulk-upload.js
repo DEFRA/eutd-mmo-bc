@@ -15,7 +15,9 @@ export const bulkUploadCertificateDetails = async (
   logger.info(`bulk upload for ${certificateList.length} documents`)
 
   const list = await getList(request)
+
   let newCertificateList = [...list]
+
   for (const newCertificate of certificateList) {
     if (checkCertificateTimestamp(newCertificate)) {
       logger.error('"certNumber" and "timestamp" are required for upload')
@@ -28,37 +30,31 @@ export const bulkUploadCertificateDetails = async (
         status: 'COMPLETE'
       }
 
-      const existingCompleteCertificate = newCertificateList.some(
+      const hasCompleteCertificate = newCertificateList.some(
         (certificate) =>
           certificate.certNumber === completeCertificate.certNumber &&
           certificate.status === completeCertificate.status
       )
 
-      if (!existingCompleteCertificate) {
+      if (!hasCompleteCertificate) {
         logger.info(`adding COMPLETE entry for ${newCertificate.certNumber}`)
         newCertificateList = [completeCertificate, ...newCertificateList]
       }
     }
 
-    const existingCertificate = newCertificateList.some(
+    const hasEntry = newCertificateList.some(
       (entry) =>
         entry.certNumber === newCertificate.certNumber &&
         entry.status === newCertificate.status
     )
 
-    if (existingCertificate) {
-      continue
+    if (!hasEntry) {
+      logger.info(
+        `adding ${newCertificate.status} entry for ${newCertificate.certNumber}`
+      )
+      newCertificateList = [newCertificate, ...newCertificateList]
     }
-
-    logger.info(`
-      adding ${newCertificate.status} entry for ${newCertificate.certNumber}`)
-
-    newCertificateList = [newCertificate, ...newCertificateList]
   }
 
-  return await upload(
-    request.s3,
-    BUCKET_FILENAME,
-    JSON.stringify(newCertificateList)
-  )
+  return upload(request.s3, BUCKET_FILENAME, JSON.stringify(newCertificateList))
 }
