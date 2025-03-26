@@ -47,7 +47,7 @@ const checkCertificateNumber = (certNumber) => {
   return matches && matches.length > 0 ? true : null
 }
 
-const checkCertificateTimestamp = (newCertificate) =>
+export const checkCertificateTimestamp = (newCertificate) =>
   !newCertificate.certNumber || !newCertificate.timestamp
 
 export const uploadCertificateDetails = async (
