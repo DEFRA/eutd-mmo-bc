@@ -26,7 +26,7 @@ export function catchAll(request, h) {
   if (!('isBoom' in response)) {
     return response.header(
       'Content-Security-Policy',
-      "default-src 'self' 'unsafe-inline'; img-src 'self'"
+      "default-src 'self'; script-src 'self' 'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='; img-src 'self'"
     )
   }
 
