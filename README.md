@@ -6,6 +6,9 @@ Core delivery platform Node.js Frontend Template..
   - [Node.js](#nodejs)
 - [Redis](#redis)
 - [Server-side Caching](#server-side-caching)
+- [Authentication](#authentication)
+  - [Azure AD Authentication (Production)](#azure-ad-authentication-production)
+  - [Legacy Authentication (Development)](#legacy-authentication-development)
 - [Local Development](#local-development)
   - [Setup](#setup)
   - [Development](#development)
@@ -43,6 +46,102 @@ Redis has been **enabled** in newly created services by setting the `redis.enabl
 ## Server-side Caching
 
 We use Catbox for server-side caching. Specifically CatboxRedis, the Redis adapter for CatBox. It is important that in memory caching isn't used for server-side caching as this will cause issues when there is more than one instance of your service running. Server-side caching has been **enabled** in newly created services by setting the `redis.enabled` property to `true`. Please see [Redis](#redis) for more information.
+
+## Authentication
+
+The application uses **Azure AD OAuth2/OpenID Connect** for all environments (development, testing, and production), providing enterprise-grade security, Single Sign-On (SSO), and audit compliance.
+
+### Features
+
+- OAuth 2.0 / OpenID Connect flow
+- JWT token validation with automatic expiration checking
+- Redis-backed distributed session management (required)
+- Role-based access control (RBAC) via Azure AD groups
+- Multi-factor authentication support (via Azure AD policies)
+- Centralized user management
+- Single Sign-On (SSO) across services
+
+### Configuration
+
+**Required environment variables:**
+
+```bash
+BASE_URL=http://localhost:3000  # Or your deployment URL
+AAD_CLIENTID=your-azure-ad-application-client-id
+AAD_CLIENTSECRET=your-azure-ad-client-secret
+AAD_TENANTID=your-azure-ad-tenant-id
+COOKIE_PASSWORD=generate-a-secure-60-character-password
+
+# Redis is required for distributed session management
+REDIS_ENABLED=true
+REDIS_HOST=127.0.0.1
+```
+
+### Azure AD Setup Steps
+
+1. **Register the application** in Azure AD:
+
+   - Go to Azure Portal → Azure Active Directory → App registrations
+   - Create a new registration with name `mmo-bc-admin`
+   - Set Redirect URI: `http://localhost:3000/auth/openid/return` (for development) or `https://your-app.domain.com/auth/openid/return` (for production)
+   - Note the Application (client) ID and Tenant ID
+
+2. **Create a client secret**:
+
+   - In your app registration, go to Certificates & secrets
+   - Create a new client secret
+   - Copy the secret value immediately (it won't be shown again)
+
+3. **Configure API permissions** (optional):
+
+   - Add Microsoft Graph permissions if you need user profile data
+   - Grant admin consent for the tenant
+
+4. **Assign users/groups**:
+
+   - Go to Enterprise Applications → Your app → Users and groups
+   - Assign Azure AD users or groups that should have access
+
+5. **Configure role claims** (optional):
+   - Define app roles in the app manifest
+   - Assign roles to users/groups
+   - Roles will be available in `claims.roles[]`
+
+### Authentication Flow
+
+1. Unauthenticated user accesses protected route → Redirected to `/login/out`
+2. Application redirects to Azure AD login portal
+3. User authenticates (with MFA if configured)
+4. Azure AD returns authorization code to `/auth/openid/return`
+5. Application exchanges code for JWT tokens
+6. Token and claims stored in Redis cache (24-hour TTL)
+7. Lightweight cookie set with user identity
+8. Every request validates JWT expiration from Redis
+
+### Local Development Setup
+
+For local development, you'll need to:
+
+1. Create an Azure AD app registration (or use a shared dev tenant)
+2. Set the redirect URI to `http://localhost:3000/auth/openid/return`
+3. Configure environment variables in `.env` file
+4. Ensure Redis is running locally (`redis-server` or via Docker)
+
+**Example .env for local development:**
+
+```bash
+NODE_ENV=development
+PORT=3000
+BASE_URL=http://localhost:3000
+AAD_CLIENTID=your-dev-client-id
+AAD_CLIENTSECRET=your-dev-client-secret
+AAD_TENANTID=your-tenant-id
+COOKIE_PASSWORD=local-dev-cookie-password-must-be-at-least-60-characters-long
+REDIS_ENABLED=true
+REDIS_HOST=127.0.0.1
+```
+
+**Note**: All team members should have access to the same Azure AD tenant for consistent development experience.
 
 ## Local Development
 

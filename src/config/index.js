@@ -1,23 +1,16 @@
 import convict from 'convict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import dotenv from 'dotenv'
+
+// Load environment variables from .env file
+dotenv.config()
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const oneHour = 1000 * 60 * 60
 const fourHours = oneHour * 4
 const oneWeekMillis = oneHour * 24 * 7
-
-const getUsers = () => {
-  let userCredentials = ''
-  if (process.env.NODE_ENV === 'production') {
-    // @ts-expect-error will be defined
-    userCredentials = JSON.parse(process.env.ADMIN_USER_CREDENTIALS)
-  } else {
-    userCredentials = [{ username: 'admin', password: 'admin' }]
-  }
-  return userCredentials
-}
 
 export const config = convict({
   env: {
@@ -159,7 +152,6 @@ export const config = convict({
       env: 'USE_SINGLE_INSTANCE_CACHE'
     }
   }),
-  users: /** @type {SchemaObj<string>} */ (getUsers()),
   authCookiePassword: /** @type {SchemaObj<string | null>} */ ({
     doc: 'Password for the auth cookie',
     format: String,
@@ -167,6 +159,44 @@ export const config = convict({
     default: 'the-password-must-be-at-least-60-characters-long',
     env: 'COOKIE_PASSWORD'
   }),
+  baseUrl: {
+    doc: 'Base URL for the application',
+    format: String,
+    default: 'http://localhost:3000',
+    env: 'BASE_URL'
+  },
+  azureAd: {
+    enabled: {
+      doc: 'Enable Azure AD authentication (always true)',
+      format: Boolean,
+      default: true,
+      env: 'AZURE_AD_ENABLED'
+    },
+    clientId: {
+      doc: 'Azure AD application (client) ID',
+      format: String,
+      default: '',
+      env: 'AAD_CLIENTID'
+    },
+    clientSecret: {
+      doc: 'Azure AD client secret',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'AAD_CLIENTSECRET'
+    },
+    tenantId: {
+      doc: 'Azure AD tenant ID',
+      format: String,
+      default: '',
+      env: 'AAD_TENANTID'
+    },
+    cookieName: {
+      doc: 'Name of the Azure AD authentication cookie',
+      format: String,
+      default: 'bc-admin-auth'
+    }
+  },
   aws: /** @type {SchemaObj<string | null>} */ ({
     region: {
       doc: 'AWS region',
