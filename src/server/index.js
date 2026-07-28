@@ -12,7 +12,10 @@ import { pulse } from '~/src/server/common/helpers/pulse.js'
 import cookie from '@hapi/cookie'
 import { s3ClientPlugin } from '~/src/server/common/helpers/repository/S3Bucket.js'
 import crumb from '@hapi/crumb'
+import { createAzureAdCache } from '~/src/server/common/helpers/authentication/cache.js'
+import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 
+const logger = createLogger()
 const isProduction = config.get('isProduction')
 const sessionAuth = 'session-auth'
 
@@ -27,31 +30,22 @@ export async function createServer() {
 
   await server.register(cookie)
 
-  server.auth.strategy(sessionAuth, 'cookie', {
-    cookie: {
-      name: sessionAuth,
-      password: config.get('authCookiePassword'),
-      isSecure: process.env.NODE_ENV === 'production',
-      ttl: 1800000,
-      clearInvalid: true,
-      path: '/'
-    },
-    keepAlive: true,
-    redirectTo: '/login',
-    validate: (_request, session) =>
-      session.authenticated ? { isValid: true } : { isValid: false }
-  })
+  await server.register([pulse, sessionCache, nunjucksConfig])
 
+  // Create Azure AD token cache after sessionCache is registered (required for Redis backend)
+  logger.info('Setting up Azure AD authentication')
+  const aadCache = await createAzureAdCache(server)
+
+  // Configure Azure AD authentication strategy before setting default
+  setupAzureAdAuth(server, aadCache)
+
+  // Set default auth and register API key scheme
   server.auth.default(sessionAuth)
   server.auth.scheme('api-key', apiKeyScheme)
   server.auth.strategy('api-key-strategy', 'api-key')
 
-  await server.register([
-    pulse,
-    sessionCache,
-    nunjucksConfig,
-    router // Register all the controllers/routes defined in src/server/router.js
-  ])
+  // Register routes after auth is configured
+  await server.register(router)
 
   await server.register({
     plugin: crumb,
@@ -88,4 +82,64 @@ const apiKeyScheme = () => {
       return h.authenticated({ credentials })
     }
   }
+}
+
+function setupAzureAdAuth(server, aadCache) {
+  const azureAdConfig = config.get('azureAd')
+  const baseUrl = config.get('baseUrl')
+  const outboundPath = '/login/out'
+  const cookieName = azureAdConfig.cookieName
+  const authCookiePassword = config.get('authCookiePassword')
+
+  logger.info(`Azure AD auth: cookie name=${cookieName}, baseUrl=${baseUrl}`)
+
+  server.auth.strategy(sessionAuth, 'cookie', {
+    cookie: {
+      name: cookieName,
+      password: authCookiePassword,
+      isSecure: process.env.NODE_ENV !== 'development',
+      isSameSite: 'Lax',
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+      path: '/'
+    },
+    appendNext: true,
+    redirectTo: `${baseUrl}${outboundPath}`,
+    validate: async (request) => {
+      logger.debug('Validating Azure AD session')
+
+      let cacheKey
+      try {
+        cacheKey = request.state[cookieName]?.sub
+      } catch (error) {
+        logger.error('Error extracting cache key from session', error)
+        return { isValid: false }
+      }
+
+      if (!cacheKey) {
+        logger.debug('No cache key found in session')
+        return { isValid: false }
+      }
+
+      const cacheData = await aadCache.get(cacheKey)
+
+      if (cacheData && typeof cacheData === 'object') {
+        const nowTimestamp = Date.now() / 1000
+        const isValid = cacheData.claims && cacheData.claims.exp > nowTimestamp
+
+        if (!isValid) {
+          logger.debug('Token expired for cache key', cacheKey)
+        }
+
+        return { isValid }
+      }
+
+      logger.debug('No valid cache data found for key', cacheKey)
+      return { isValid: false }
+    }
+  })
+
+  // Store cache instance on server for route access
+  server.app.aadCache = aadCache
+
+  logger.info('Azure AD authentication strategy configured')
 }

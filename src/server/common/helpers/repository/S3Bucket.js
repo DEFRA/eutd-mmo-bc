@@ -35,7 +35,7 @@ const s3ClientPlugin = {
 }
 
 async function streamToString(stream) {
-  return await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const chunks = []
     stream.on('data', (chunk) => chunks.push(chunk))
     stream.on('error', reject)
