@@ -31,7 +31,8 @@ const handleLoginOut = async (_request, h) => {
     logger.info('Redirecting to Azure AD login' + authorizationUrl)
     return h.redirect(authorizationUrl)
   } catch (error) {
-    logger.error('Error initiating Azure AD login', error)
+    logger.error('Error initiating Azure AD login')
+    logger.error(error)
     return h
       .response('Authentication service unavailable')
       .code(RESPONSE_SERVICE_UNAVAILABLE)
@@ -81,7 +82,8 @@ const handleAuthCallback = (server) => async (request, h) => {
 
     return h.redirect(`${baseUrl}/admin`)
   } catch (error) {
-    logger.error('Azure AD callback error', error)
+    logger.error('Azure AD callback error')
+    logger.error(error)
     return h.redirect('/login?error=auth_failed').takeover()
   }
 }
@@ -96,7 +98,8 @@ const handleSignOut = (server) => async (request, h) => {
   try {
     cacheKey = request.state[cookieName]?.sub
   } catch (error) {
-    logger.error('Error extracting cache key during sign-out', error)
+    logger.error('Error extracting cache key during sign-out')
+    logger.error(error)
   }
 
   // Clear cache entry
