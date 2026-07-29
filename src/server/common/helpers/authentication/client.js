@@ -1,12 +1,28 @@
-import { Issuer } from 'openid-client'
+import { Issuer, custom } from 'openid-client'
 import { config } from '~/src/config/index.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
+import { proxyAgent } from '~/src/server/common/helpers/proxy-agent.js'
 
 const logger = createLogger()
 
 Issuer.defaultHttpOptions = {
   timeout: 5000,
   retries: 2
+}
+
+/**
+ * Route openid-client's outbound HTTP calls (issuer discovery and token
+ * requests) through the CDP forward proxy when one is configured. In
+ * environments such as AWS Dev the containers have no direct egress, so
+ * without this the discovery call to login.microsoftonline.com fails with an
+ * AggregateError. Local dev has no proxy configured, so this is a no-op there.
+ */
+function configureProxy() {
+  const proxy = proxyAgent()
+  if (proxy) {
+    logger.info('Configuring Azure AD client to use forward proxy')
+    custom.setHttpOptionsDefaults({ agent: proxy.agent })
+  }
 }
 
 /**
@@ -36,6 +52,8 @@ class AuthenticationClient {
     }
 
     const discoveryUri = `https://login.microsoftonline.com/${tenantId}/.well-known/openid-configuration`
+
+    configureProxy()
 
     logger.info('Instantiating Azure AD issuer...')
 

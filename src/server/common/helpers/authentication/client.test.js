@@ -7,7 +7,8 @@ import {
   jest
 } from '@jest/globals'
 import AuthenticationClient from '~/src/server/common/helpers/authentication/client.js'
-import { Issuer } from 'openid-client'
+import { Issuer, custom } from 'openid-client'
+import { proxyAgent } from '~/src/server/common/helpers/proxy-agent.js'
 
 // Mock openid-client
 jest.mock('openid-client', () => {
@@ -25,10 +26,18 @@ jest.mock('openid-client', () => {
       discover: jest.fn(() => mockIssuer),
       defaultHttpOptions: {}
     },
+    custom: {
+      setHttpOptionsDefaults: jest.fn()
+    },
     __mockClient: mockClient,
     __mockIssuer: mockIssuer
   }
 })
+
+// Mock proxy agent
+jest.mock('~/src/server/common/helpers/proxy-agent.js', () => ({
+  proxyAgent: jest.fn(() => null)
+}))
 
 // Mock config
 jest.mock('~/src/config/index.js', () => ({
@@ -82,6 +91,27 @@ describe('AuthenticationClient', () => {
       const client2 = await AuthenticationClient.getClient()
 
       expect(client1).toBe(client2)
+      expect(Issuer.discover).toHaveBeenCalledTimes(1)
+    })
+
+    test('Should not configure a proxy when none is set (local dev)', async () => {
+      proxyAgent.mockReturnValueOnce(null)
+
+      await AuthenticationClient.getClient()
+
+      expect(custom.setHttpOptionsDefaults).not.toHaveBeenCalled()
+      expect(Issuer.discover).toHaveBeenCalledTimes(1)
+    })
+
+    test('Should configure openid-client to use the proxy when one is set', async () => {
+      const agent = { agent: 'mock-agent' }
+      proxyAgent.mockReturnValueOnce(agent)
+
+      await AuthenticationClient.getClient()
+
+      expect(custom.setHttpOptionsDefaults).toHaveBeenCalledWith({
+        agent: agent.agent
+      })
       expect(Issuer.discover).toHaveBeenCalledTimes(1)
     })
   })
