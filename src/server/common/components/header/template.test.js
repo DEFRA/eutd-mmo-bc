@@ -14,15 +14,22 @@ describe('Header Component', () => {
     })
 
     test('Should render app header component', () => {
-      expect($heading('[data-module="govuk-header"]')).toHaveLength(1)
+      expect($heading('.govuk-header')).toHaveLength(1)
+      expect($heading('.govuk-header__logotype')).toHaveLength(1)
     })
 
     test('Should contain expected heading', () => {
-      expect($heading('a.govuk-header__service-name').text().trim()).toBe(
-        'Check an Export Certificate'
-      )
+      expect(
+        $heading('.govuk-service-navigation__service-name').text().trim()
+      ).toBe('Check an Export Certificate')
 
-      expect($heading('a[href="/"]')).toHaveLength(1)
+      expect(
+        $heading('a.govuk-service-navigation__link[href="/"]')
+      ).toHaveLength(1)
+    })
+
+    test('Should render the admin link', () => {
+      expect($heading('#adminLink')).toHaveLength(1)
     })
 
     test('Should not render the sign out button', () => {
@@ -40,7 +47,8 @@ describe('Header Component', () => {
     })
 
     test('Should render app header component', () => {
-      expect($heading('[data-module="govuk-header"]')).toHaveLength(1)
+      expect($heading('.govuk-header')).toHaveLength(1)
+      expect($heading('.govuk-header__logotype')).toHaveLength(1)
     })
 
     test('Should render the sign out button', () => {
