@@ -35,6 +35,10 @@
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "fsevents@2.3.3": true
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "3.626.0",
     "@aws-sdk/credential-providers": "3.632.0",
