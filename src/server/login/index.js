@@ -1,6 +1,6 @@
 import { loginController } from '~/src/server/login/controller.js'
 import { config } from '~/src/config/index.js'
-import AuthenticationClient from '~/src/server/common/helpers/authentication/client.js'
+import AuthenticationClient from '~/src/server/common/helpers/authentication/AuthenticationClient.js'
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 
 const logger = createLogger()
