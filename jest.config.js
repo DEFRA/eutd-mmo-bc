@@ -17,7 +17,8 @@ export default {
     '<rootDir>/src/__fixtures__',
     '<rootDir>/src/server/common/test-helpers',
     '<rootDir>/src/client',
-    '<rootDir>/src/config/index.js'
+    '<rootDir>/src/config/index.js',
+    '<rootDir>/src/index.js'
   ],
   coverageDirectory: '<rootDir>/coverage'
 }
