@@ -6,7 +6,7 @@ import {
   afterEach,
   jest
 } from '@jest/globals'
-import AuthenticationClient from '~/src/server/common/helpers/authentication/client.js'
+import AuthenticationClient from '~/src/server/common/helpers/authentication/AuthenticationClient.js'
 import { Issuer, custom } from 'openid-client'
 import { proxyAgent } from '~/src/server/common/helpers/proxy-agent.js'
 

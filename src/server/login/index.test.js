@@ -1,6 +1,6 @@
 import { createServer } from '~/src/server/index.js'
 import { config } from '~/src/config/index.js'
-import AuthenticationClient from '~/src/server/common/helpers/authentication/client.js'
+import AuthenticationClient from '~/src/server/common/helpers/authentication/AuthenticationClient.js'
 
 const baseUrl = config.get('baseUrl')
 const cookieName = config.get('azureAd').cookieName
