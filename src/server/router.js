@@ -22,7 +22,7 @@ const swaggerOptions = {
     },
     license: {
       name: 'OGL v3.0',
-      url: 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/'
+      url: 'https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/'
     }
   },
   tags: [
